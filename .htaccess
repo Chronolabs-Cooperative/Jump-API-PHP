@@ -1,0 +1,19 @@
+
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ping.api 							ping.php?action=$1		 [L,NC,QSA]
+RewriteRule ^pong.api 							ping.php?action=$1		 [L,NC,QSA]
+RewriteRule ^peers.api 							peers.php?action=$1		 [L,NC,QSA]
+RewriteRule ^([a-zA-Z0-9\-]{4,9})$					index.php?action=jump&item=$1	 [L,NC,QSA]
+RewriteRule ^v2/url.api$						index.php?action=url	 	[L,NC,QSA]
+RewriteRule ^style.css$							style.css		 	[L,NC,QSA]
+
+
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ^([a-zA-Z0-9\-]{4,9}).jump.(.*?)$
+RewriteRule .* 	index.php?action=jump&subdomain=1	 [L,NC,QSA]
+
+
+
+
