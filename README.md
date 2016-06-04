@@ -51,7 +51,7 @@ This PHP example with the function used to use php-curl with post header variabl
      	 * 
      	 */
 
-     $json = json_decode(getURIData('http://jump/v2/url.api', 45, 45, 
+     $json = json_decode(getURIData('http://jump.labs.coop/v2/url.api', 45, 45, 
                          array('response'=>'json', 
                                'url'=>'http://cipher.labs.coop/?s=openrend'))
      								, true);
