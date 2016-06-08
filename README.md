@@ -16,14 +16,14 @@ This PHP example with the function used to use php-curl with post header variabl
      	
      		/* function getURIData()
      		 * cURL Routine for passing $_POST Variable and retreiving URL
-		 * 
+     		 * 
      		 * @author Simon Roberts (Chronolabs Cooperative) simon@staff.labs.coop
      		 *
-		 * @param $url string
-		 * @param $timeout integer
-		 * @param $connectout integer
-		 * @param $posts array
-		 * 
+     		 * @param $url string
+     		 * @param $timeout integer
+     		 * @param $connectout integer
+     		 * @param $posts array
+     		 * 
      		 * @return string
      		 */
      		function getURIData($uri = '', $timeout = 65, $connectout = 65, $posts = array())
