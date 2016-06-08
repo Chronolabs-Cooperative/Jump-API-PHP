@@ -21,7 +21,7 @@ This PHP example with the function used to use php-curl with post header variabl
      		 *
      		 * @return 		float()
      		 */
-     		function getURIData($uri = '', $timeout = 65, $connectout = 65, $post_data = array())
+     		function getURIData($uri = '', $timeout = 65, $connectout = 65, $posts = array())
      		{
      			if (!function_exists("curl_init"))
      			{
@@ -33,7 +33,7 @@ This PHP example with the function used to use php-curl with post header variabl
      			curl_setopt($btt, CURLOPT_HEADER, 0);
      			curl_setopt($btt, CURLOPT_POST, (count($posts)==0?false:true));
      			if (count($posts)!=0)
-     				curl_setopt($btt, CURLOPT_POSTFIELDS, http_build_query($post_data));
+     				curl_setopt($btt, CURLOPT_POSTFIELDS, http_build_query($posts));
      			curl_setopt($btt, CURLOPT_CONNECTTIMEOUT, $connectout);
      			curl_setopt($btt, CURLOPT_TIMEOUT, $timeout);
      			curl_setopt($btt, CURLOPT_RETURNTRANSFER, true);
