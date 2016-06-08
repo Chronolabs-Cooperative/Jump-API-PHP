@@ -15,17 +15,22 @@ This PHP example with the function used to use php-curl with post header variabl
      	if (!function_exists("getURIData")) {
      	
      		/* function getURIData()
-     		 *
-     		 * 	cURL Routine
+     		 * cURL Routine for passing $_POST Variable and retreiving URL
+		 * 
      		 * @author 		Simon Roberts (Chronolabs) simon@staff.labs.coop
      		 *
-     		 * @return 		float()
+		 * @param $url string
+		 * @param $timeout integer
+		 * @param $connectout integer
+		 * @param $posts array
+		 * 
+     		 * @return string
      		 */
      		function getURIData($uri = '', $timeout = 65, $connectout = 65, $posts = array())
      		{
      			if (!function_exists("curl_init"))
      			{
-     				die("You need to install cURL: $ sudo apt-get install php-curl;
+     				die("You need to install cURL: $ sudo apt-get install php-curl");
      			}
      			if (!$btt = curl_init($uri)) {
      				return false;
