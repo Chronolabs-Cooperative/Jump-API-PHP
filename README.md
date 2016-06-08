@@ -25,7 +25,7 @@ This PHP example with the function used to use php-curl with post header variabl
      		{
      			if (!function_exists("curl_init"))
      			{
-     				die("You need to install cURL: $ sudo apt-get install php-curl;
+     				die("You need to install cURL: $ sudo apt-get install php-curl");
      			}
      			if (!$btt = curl_init($uri)) {
      				return false;
