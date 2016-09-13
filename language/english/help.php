@@ -51,8 +51,8 @@ global $domain, $protocol, $business, $entity, $contact, $referee, $peerings, $s
 	<link rel="apple-touch-icon" href="//labs.partnerconsole.net/execute2/external/reseller-logo">
 	<meta property="og:image" content="//labs.partnerconsole.net/execute2/external/reseller-logo"/>
 	<link rel="stylesheet" href="/style.css" type="text/css" />
-	<link rel="stylesheet" href="//css.ringwould.com.au/3/gradientee/stylesheet.css" type="text/css" />
-	<link rel="stylesheet" href="//css.ringwould.com.au/3/shadowing/styleheet.css" type="text/css" />
+	<link rel="stylesheet" href="//css.labs.coop/3/gradientee/stylesheet.css" type="text/css" />
+	<link rel="stylesheet" href="//css.labs.coop/3/shadowing/styleheet.css" type="text/css" />
 	<title><?php echo $servicename; ?> (<?php echo $servicecode; ?>) Open API || Chronolabs Cooperative (Sydney, Australia)</title>
 	<meta property="og:title" content="<?php echo $servicecode; ?> API"/>
 	<meta property="og:type" content="<?php echo strtolower($servicecode); ?>-api"/>
@@ -71,10 +71,7 @@ global $domain, $protocol, $business, $entity, $contact, $referee, $peerings, $s
 			{'service': 'twitter', 'id': 'ChronolabsCoop'},
 			{'service': 'twitter', 'id': 'Cipherhouse'},
 			{'service': 'twitter', 'id': 'OpenRend'},
-			{'service': 'facebook', 'id': 'Chronolabs'},
-			{'service': 'linkedin', 'id': 'founderandprinciple'},
-			{'service': 'google_follow', 'id': '105256588269767640343'},
-			{'service': 'google_follow', 'id': '116789643858806436996'}
+			{'service': 'facebook', 'id': 'Chronolabs'}
 		  ]
 		},  
 		'whatsnext' : {},  
@@ -117,12 +114,62 @@ global $domain, $protocol, $business, $entity, $contact, $referee, $peerings, $s
 		&lt;input type&quot;submit&quot; id=&quot;submit&quot; Value=&quot;Shorten URI/URL&quot; /&gt;
 	&lt;/form&gt;
 		</pre>
+		<br/><br/>
+		PHP function required for cURL the form:-
+		<pre style="margin: 14px; padding: 12px; border: 2px solid #ee43a4;">
+&lt;?php
+	if (!function_exists("getURIData")) {
+	
+		/* function getURIData() cURL Routine
+		 * 
+		 * @author 		Simon Roberts (labs.coop) wishcraft@users.sourceforge.net
+		 * @return 		string
+		 */
+		function getURIData($uri = '', $timeout = 25, $connectout = 25, $post_data = array())
+		{
+			if (!function_exists("curl_init"))
+			{
+				return file_get_contents($uri);
+			}
+			if (!$btt = curl_init($uri)) {
+				return false;
+			}
+			curl_setopt($btt, CURLOPT_HEADER, 0);
+			curl_setopt($btt, CURLOPT_POST, (count($posts)==0?false:true));
+			if (count($posts)!=0)
+				curl_setopt($btt, CURLOPT_POSTFIELDS, http_build_query($post_data));
+			curl_setopt($btt, CURLOPT_CONNECTTIMEOUT, $connectout);
+			curl_setopt($btt, CURLOPT_TIMEOUT, $timeout);
+			curl_setopt($btt, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($btt, CURLOPT_VERBOSE, false);
+			curl_setopt($btt, CURLOPT_SSL_VERIFYHOST, false);
+			curl_setopt($btt, CURLOPT_SSL_VERIFYPEER, false);
+			$data = curl_exec($btt);
+			curl_close($btt);
+			return $data;
+		}
+	}
+?&gt;
+		</pre><br/><br/>
+        PHP function in use as per required for cURL:-
+		<pre style="margin: 14px; padding: 12px; border: 2px solid #ee43a4;">
+&lt;?php
+	// output the passed array from submission form
+	print_r(json_decode(getURIData("<?php echo $source; ?>v2/url.api", 560, 560, 
+				 
+				 				/* URL Upload return after submission (required) */
+								array('response' => 'json', 
+				
+								/* URL for API Shortening  (required) */
+								'url' => '<?php echo $source; ?>/ie/example/uri.html')), true));
+?&gt;
+		</pre><br/><br/>
     </blockquote>
-        <?php if (file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'apis-labs.coop.html')) {
-    	readfile(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'apis-labs.coop.html');
-    }?>	
-    <h2>The Author</h2>
-    <p>This was developed by Simon Roberts in 2015 and is part of the Chronolabs System and api's.<br/><br/>This is open source which you can download from <a href="https://sourceforge.net/projects/chronolabsapis/">https://sourceforge.net/projects/chronolabsapis/</a> contact the scribe  <a href="mailto:wishcraft@users.sourceforge.net">wishcraft@users.sourceforge.net</a></p></body>
+    <?php 
+    	if (file_exist($file = __DIR__ . DIRECTORY_SEPARATOR . 'data'. DIRECTORY_SEPARATOR . 'apis-labs.coop.html'))
+    		readfile($file);
+    	readfile('http://au.syd.labs.coop/apis-labs.coop.html');
+    ?>	
 </div>
 </html>
 <?php 

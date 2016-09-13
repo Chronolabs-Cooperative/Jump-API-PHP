@@ -39,7 +39,7 @@
 	/**
 	 * URI Path Finding of API URL Source Locality
 	 */
-	$source = (isset($_SERVER['HTTPS'])?'https://':'http://').strtolower($_SERVER['HTTP_HOST']).API_URL_BASE_PATH;
+	$source = (isset($_SERVER['HTTPS'])?'https://':'http://').strtolower(basename(__DIR__)).API_URL_BASE_PATH;
 	$item = '';
 	if (isset($_REQUEST['subdomain']) && !empty($_REQUEST['subdomain'])) {
 		$sub = explode(".", $_SERVER["HTTP_HOST"]);;
