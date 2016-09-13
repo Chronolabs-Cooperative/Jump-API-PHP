@@ -166,7 +166,7 @@ global $domain, $protocol, $business, $entity, $contact, $referee, $peerings, $s
 		</pre><br/><br/>
     </blockquote>
     <?php 
-    	if (file_exist($file = __DIR__ . DIRECTORY_SEPARATOR . 'data'. DIRECTORY_SEPARATOR . 'apis-labs.coop.html'))
+    	if (file_exist($file = __DIR__ . DIRECTORY_SEPARATOR . 'apis-labs.coop.html'))
     		readfile($file);
     	readfile('http://au.syd.labs.coop/apis-labs.coop.html');
     ?>	
