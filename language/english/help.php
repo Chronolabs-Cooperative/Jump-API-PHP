@@ -166,9 +166,13 @@ global $domain, $protocol, $business, $entity, $contact, $referee, $peerings, $s
 		</pre><br/><br/>
     </blockquote>
     <?php 
-    	if (file_exist($file = __DIR__ . DIRECTORY_SEPARATOR . 'apis-labs.coop.html'))
-    		readfile($file);
-    	readfile('http://au.syd.labs.coop/apis-labs.coop.html');
+    	if (strlen(session_id())==0)
+    		session_start();
+    	if (!isset($_SESSION['footer']['jump']))
+    		$_SESSION['footer']['jump'] = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'apis-labs.coop.html');
+    	if (!isset($_SESSION['footer']['main']))
+    		$_SESSION['footer']['main'] = file_get_contents('http://au.syd.labs.coop/apis-labs.coop.html');
+    	echo $_SESSION['footer']['jump'] . $_SESSION['footer']['main'];
     ?>	
 </div>
 </html>

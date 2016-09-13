@@ -1,12 +1,9 @@
 @CHARSET "ISO-8859-1";
 
-@import url(https://fonts.ringwould.com.au/v1/random/any/Api-Header-Alpha/css.api);
-@import url(https://fonts.ringwould.com.au/v1/random/any/Api-Header-Omega/css.api);
-@import url(https://fonts.ringwould.com.au/v1/random/any/Api-Content/css.api);
-@import url(https://fonts.ringwould.com.au/v1/random/any/Api-Fields/css.api);
-@import url(https://fonts.ringwould.com.au/v1/random/any/Api-Bullets/css.api);
-@import url(https://fonts.ringwould.com.au/v1/random/any/Api-Main/css.api);
-@import url(https://fonts.ringwould.com.au/v1/random/courier-terminal-shell/Api-Code-Examples/css.api);
+@import url(//fonts.labs.coop/v2/random/any/Api-Header-Alpha/css.api);
+@import url(//fonts.labs.coop/v2/random/any/Api-Header-Omega/css.api);
+@import url(//fonts.labs.coop/v2/random/any/Api-Content/css.api);
+@import url(//fonts.labs.coop/v2/random/any/Api-Fields/css.api);
 
 body {
 	font-family: "Api Content", "Trebuchet MS", Arial, Helvetica, sans-serif;
