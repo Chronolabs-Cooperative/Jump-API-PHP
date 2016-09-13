@@ -2,7 +2,7 @@
 ## Author: Simon Antony Roberts (c) 2016
 ## Contact: simon@staff.labs.coop
 
- * This is also destributed under acedemic licencing.
+ * This is also distributed under acedemic licencing as well as general public licence 3.0 (GPL3)
 
 ## Shortening API Installation
 You have to take the files from this respository and mount them in a path which is the subpath or path of the url base level used to access the service, say you are accessing 2.labs.coop then the files would natively on ubuntu run in /var/www/2.labs.coop/...
