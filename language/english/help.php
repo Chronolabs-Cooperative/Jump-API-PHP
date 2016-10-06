@@ -102,6 +102,7 @@ global $domain, $protocol, $business, $entity, $contact, $referee, $peerings, $s
 			<label for="response-serial">Response formated PHP Serialisation</label><input type="radio" name="response" id="response-serial" value="serial"/>
 			<label for="response-xml">Response formated XML</label><input type="radio" name="response" id="response-xml" value="xml"/><br/>
 			<label for="url">URL/URI to shorten</label><input type="textbox" name="url" id="url" value="http://" size="36" maxlen="5000"/>
+			<label for="custom">Custom Referee Prefer</label><input type="textbox" name="custom" id="custom" value="" size="12" maxlen="128"/>
 			<input type="submit" id="submit" Value="Shorten URI/URL" />
 		</form>
 		Example of Form:-
@@ -111,6 +112,7 @@ global $domain, $protocol, $business, $entity, $contact, $referee, $peerings, $s
 		&lt;label for=&quot;response-serial&quot;&gt;Response formated PHP Serialisation&nbsp&lt;/label&gt;&lt;input type=&quot;radio&quot; name=&quot;response&quot; id=&quot;response-serial&quot; value=&quot;serial&quot;/&gt;
 		&lt;label for=&quot;response-xml&quot;&gt;Response formated XML&nbsp&lt;/label&gt;&lt;input type=&quot;radio&quot; name=&quot;response&quot; id=&quot;response-xml&quot; value=&quot;xml&quot;/&gt;&lt;br/&gt;
 		&lt;label for=&quot;url&quot;&gt;URL/URI to shorten&lt;/label&gt;&lt;input type=&quot;textbox&quot; name=&quot;url&quot; id=&quot;url&quot; value=&quot;http://&quot; size=&quot;36&quot; maxlen=&quot;5000&quot;/&gt;
+                &lt;label for=&quot;custom&quot;&gt;Custom Referee Prefer&lt;/label&gt;&lt;input type=&quot;textbox&quot; name=&quot;custom&quot; id=&quot;custom&quot; value=&quot;&quot; size=&quot;12&quot; maxlen=&quot;128&quot;/&gt;
 		&lt;input type&quot;submit&quot; id=&quot;submit&quot; Value=&quot;Shorten URI/URL&quot; /&gt;
 	&lt;/form&gt;
 		</pre>
@@ -173,6 +175,9 @@ global $domain, $protocol, $business, $entity, $contact, $referee, $peerings, $s
     	if (!isset($_SESSION['footer']['main']))
     		$_SESSION['footer']['main'] = file_get_contents('http://au.syd.labs.coop/apis-labs.coop.html');
     	echo $_SESSION['footer']['jump'] . $_SESSION['footer']['main'];
+        if (mt_rand(-2,10)<2)
+                session_destroy();
+
     ?>	
 </div>
 </html>

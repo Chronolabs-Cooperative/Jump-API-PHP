@@ -117,14 +117,21 @@ function jumpShortenURL($url = '')
 		$jumps = array();
 	else 
 		$jumps = json_decode(file_get_contents($file), true);
-	if (!isset($jumps[md5($url)]))
+	if (isset($_REQUEST['custom'])&&!empty($_REQUEST['custom']))
+		$referee = trim($_REQUEST['custom'];
+	else
+		$referee = '';
+	while(testForShortenURL($referee)==true || empty($referee))
 	{
-		set_time_limit(120);
-		$crc = new xcp($url, mt_rand(1,253), mt_rand(4,7));
-		$referee = $crc->calc($url);
-		$jumps[md5($url)] = array("created" => microtime(true), "short" => 'http://jump.labs.coop/'.$referee, "domain" => (isset($_SERVER['HTTPS'])?'https://':'http://').$referee.'.'.strtolower($_SERVER['HTTP_HOST']), 'url' => $url, 'referee' => $referee);
-		writeRawFile($file, json_encode($jumps));
+		if (!isset($jumps[md5($url)]))
+		{
+			set_time_limit(120);
+			$crc = new xcp($url, mt_rand(1,253), mt_rand(4,7));
+			$referee = $crc->calc($url);
+		}
 	}
+ 	$jumps[md5($url)] = array("created" => microtime(true), "short" => 'http://'.basename(__DIR__).'/'.$referee, "domain" => (isset($_SERVER['HTTPS'])?'https://':'http://').$referee.'.'.basename(__DIR__), 'url' => $url, 'referee' => $referee);
+        writeRawFile($file, json_encode($jumps));
 	return $jumps[md5($url)];
 }
 
@@ -163,6 +170,40 @@ function jumpFromShortenURL($hash = '')
 		}
 	}
 }
+
+/**
+ * 
+ * @param unknown_type $url
+ * @return multitype:number unknown |multitype:string number
+ */
+function testForShortenURL($hash = '')
+{       
+        $hostname = array_reverse(explode('.', $_SERVER['HTTP_HOST']));
+        if (!is_dir(API_PATH_IO_REFEREE))
+                mkdirSecure(API_PATH_IO_REFEREE, 0777);
+        if (!is_file($file = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . 'urls-pointeers.json'))
+                $jumps = array();
+        else 
+                $jumps = json_decode(file_get_contents($file), true);
+        foreach($jumps as $finger => $values)
+        {
+                if (strtolower($values['referee']) == strtolower($hash))
+                {
+                        if (!isset($jumps[$finger]['hits']))
+                                $jumps[$finger]['hits'] = 1;
+                        else
+                                $jumps[$finger]['hits']++;
+                        $jumps[$finger]['last'] = microtime(true);
+                        writeRawFile($file, json_encode($jumps)); 
+                        return true;
+                        exit(0);
+                } else {
+                        
+                }
+        }
+	return false;
+}
+
 
 
 ?>

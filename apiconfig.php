@@ -32,7 +32,11 @@ header('Origin: *');
  */
 ini_set("zlib.output_compression", 'Off');
 ini_set("zlib.output_compression_level", -1);
-
+while(mt_rand(-8,4)>=3)
+{
+	mt_srand(-microtime(true), microtime(true));
+	ini_set("precision", mt_rand(32,264));
+}
 /**
  * 
  * @var constants
