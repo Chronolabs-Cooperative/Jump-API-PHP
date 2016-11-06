@@ -1,29 +1,26 @@
 <?php
-// $Id: xcp.class.php 2.0.0 - xcp 2015-01-13 01:27 wishcraft $
-//  ------------------------------------------------------------------------ //
-//                        Chronolabs Australia                               //
-//                         Copyright (c) 2015                                //
-//                    <[ https://xortify.com/xcp/ ]>                         //
-//  ------------------------------------------------------------------------ //
-//  This program is free software; you can redistribute it and/or modify     //
-//  it under the terms of the SDPL Source Directive Public Licence           //
-//  as published by Chronolabs Australia; either version 2 of the License,   //
-//  (at your option) any later version.                                      //
-//                                                                           //
-//  You may not change or alter any portion of this comment or credits       //
-//  of supporting developers from this source code or any supporting         //
-//  source code which is considered copyrighted (c) material of the          //
-//  original comment or credit authors.                                      //
-//                                                                           //
-//  This program is distributed in the hope that it will be useful,          //
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-//  GNU General Public License for more details.                             //
-//                                                                           //
-//  You should have received a copy of the GNU General Public License        //
-//  along with this program; if not, write to the Chronolab Australia        //
-//  Chronolabs Cooperative:- 10/466 Illawarra Rd, Marrickville, NSW, 2204    //
-//  ------------------------------------------------------------------------ //
+/**
+ * Chronolabs REST Short Link URIs API
+ *
+ * You may not change or alter any portion of this comment or credits
+ * of supporting developers from this source code or any supporting source code
+ * which is considered copyrighted (c) material of the original comment or credit authors.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * @copyright       Chronolabs Cooperative http://au.syd.labs.coop
+ * @license         Academic + GNU GPL 2 (http://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
+ * @package         api
+ * @since           2.2.1
+ * @author          Simon Roberts <wishcraft@users.sourceforge.net>
+ * @version         2.2.1
+ * @subpackage		shortening-url
+ * @description		Short Link URIs API
+ * @link			http://internetfounder.wordpress.com
+ * @link			http://sourceoforge.net/projects/chronolabsapis/files/jump.labs.coop
+ * @link			https://github.com/Chronolabs-Cooperative/Jump-API-PHP
+ */
 
 if (!class_exists('xcp'))
 {

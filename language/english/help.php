@@ -9,18 +9,18 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * @copyright       Chronolabs Cooperative http://labs.coop
- * @license         GNU GPL 2 (http://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
- * @package         salty
- * @since           2.0.1
+ * @copyright       Chronolabs Cooperative http://au.syd.labs.coop
+ * @license         Academic + GNU GPL 2 (http://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
+ * @package         api
+ * @since           2.2.1
  * @author          Simon Roberts <wishcraft@users.sourceforge.net>
- * @version         $Id: manager.php 1000 2015-06-16 23:11:55Z wishcraft $
- * @subpackage		help-html
+ * @version         2.2.1
+ * @subpackage		shortening-url
  * @description		Short Link URIs API
- * @link			http://cipher.labs.coop
- * @link			http://sourceoforge.net/projects/chronolabsapis
+ * @link			http://internetfounder.wordpress.com
+ * @link			http://sourceoforge.net/projects/chronolabsapis/files/jump.labs.coop
+ * @link			https://github.com/Chronolabs-Cooperative/Jump-API-PHP
  */
-
 
 if (strlen($theip = whitelistGetIP(true))==0)
 	$theip = "127.0.0.1";
