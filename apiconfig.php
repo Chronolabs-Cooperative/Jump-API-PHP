@@ -22,6 +22,11 @@
  * @link			https://github.com/Chronolabs-Cooperative/Jump-API-PHP
  */
 
+error_reporting(0);
+ini_set('display_errors', false);
+ini_set('log_errors', false);
+
+
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'functions.php';
 
@@ -52,9 +57,5 @@ define("API_URL_BASE_PATH", "/");
 define("API_PATH_IO_CACHE", __DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache');
 define("API_PATH_IO_REFEREE", __DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'referee');
 define("_API_LANGUAGE_DEFAULT", "english");
-
-error_reporting(0);
-ini_set('display_errors', false);
-ini_set('log_errors', false);
 
 ?>

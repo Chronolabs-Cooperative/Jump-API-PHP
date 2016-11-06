@@ -599,7 +599,7 @@ function jumpShortenURL($url = '')
 	else 
 		$jumps = json_decode(file_get_contents($file), true);
 	if (isset($_REQUEST['custom'])&&!empty($_REQUEST['custom']))
-		$referee = trim($_REQUEST['custom'];
+		$referee = trim($_REQUEST['custom']);
 	else
 		$referee = '';
 	while(testForShortenURL($referee)==true || empty($referee))
@@ -611,7 +611,17 @@ function jumpShortenURL($url = '')
 			$referee = $crc->calc($url);
 		}
 	}
- 	$jumps[md5($url)] = array("created" => microtime(true), "last" => microtime(true), 'inactive' = (API_DROP_DAYS_INACTIVE * (3600 * 24)), "short" => 'http://'.basename(__DIR__).'/'.$referee, "domain" => (isset($_SERVER['HTTPS'])?'https://':'http://').$referee.'.'.basename(__DIR__), 'url' => $url, 'referee' => $referee);
+	if (!is_file($file = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . 'urls-pointeers.json'))
+                $jumps = array();
+        else
+                $jumps = json_decode(file_get_contents($file), true);
+	foreach($jumps as $finger => $values)
+        {
+                if (isset($values['last']) && isset($values['inactive']))
+                        if ($values['last'] < microtime(true) - $values['inactive'])
+                                unset($jumps[$finger]);
+        }
+ 	$jumps[md5($url.$referee.microtime(true))] = array("created" => microtime(true), "last" => microtime(true), 'inactive' => (API_DROP_DAYS_INACTIVE * (3600 * 24)), "short" => API_PROTOCOL.API_HOSTNAME.'/'.$referee, "domain" => API_PROTOCOL.$referee.'.'.API_HOSTNAME, 'url' => $url, 'referee' => $referee);
         writeRawFile($file, json_encode($jumps));
 	return $jumps[md5($url)];
 }
