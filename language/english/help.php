@@ -168,16 +168,7 @@ global $domain, $protocol, $business, $entity, $contact, $referee, $peerings, $s
 		</pre><br/><br/>
     </blockquote>
     <?php 
-    	if (strlen(session_id())==0)
-    		session_start();
-    	if (!isset($_SESSION['footer']['jump']))
-    		$_SESSION['footer']['jump'] = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'apis-labs.coop.html');
-    	if (!isset($_SESSION['footer']['main']))
-    		$_SESSION['footer']['main'] = file_get_contents('http://au.syd.labs.coop/apis-labs.coop.html');
-    	echo $_SESSION['footer']['jump'] . $_SESSION['footer']['main'];
-        if (mt_rand(-2,10)<2)
-                session_destroy();
-
+    	readfile(__DIR__ . DIRECTORY_SEPARATOR . 'apis-labs.coop.html');
     ?>	
 </div>
 </html>

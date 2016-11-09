@@ -135,3 +135,8 @@ The following URL can be used to Shortening a URL, they are the following domain
      walk.labs.coop
      why.labs.coop
      xtc.labs.coop
+     
+     
+## Source for Education Exercise with this package
+You will be able to email Prof. Matthew Roberts <matthew.roberts@mq.edu.au> who is an IT teacher and lecture as a teacher of any University, Multiversity or Secondary school for excerises and examples for this open source package to use as a teaching tool.
+     
