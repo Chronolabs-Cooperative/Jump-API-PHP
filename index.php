@@ -40,33 +40,25 @@
 	/**
 	 * URI Path Finding of API URL Source Locality
 	 */
-	$source = (isset($_SERVER['HTTPS'])?'https://':'http://').strtolower(basename(__DIR__)).API_URL_BASE_PATH;
-	$item = '';
-	if (isset($_REQUEST['subdomain']) && !empty($_REQUEST['subdomain'])) {
-		$sub = explode(".", $_SERVER["HTTP_HOST"]);;
-		$item = $sub[0];
-	} elseif (isset($_REQUEST['item']) && !empty($_REQUEST['item']))
-	{
-		$item = $_REQUEST['item'];
-	}
-	
-	/**
-	 * 
-	 * Display Help if Function Variables Are Wrong
-	 */
-	if (empty($item) && empty($_REQUEST['url']) && checkDisplayHelp(isset($_REQUEST['action'])?$_REQUEST['action']:'')) {
-		if (function_exists("http_response_code"))
-			http_response_code(400);
-		apiLoadLanguage('help');
-		exit;
-	}
-	if (function_exists("http_response_code"))
-		http_response_code(200);
-		
 	$action = $_REQUEST['action'];
-	
-		
+	$source = (isset($_SERVER['HTTPS'])?'https://':'http://').strtolower(basename(__DIR__)).API_URL_BASE_PATH;
+	$item = str_replace(strtolower(basename(__DIR__)), '', $_SERVER['HTTP_HOST']);
+	if (substr($item, strlen($item)-1,1)=='.')
+		$item = substr($item,0,strlen($item)-1);
+	else
+		$item = str_replace(API_URL_BASE_PATH, '', $_SERVER['REQUEST_URI']);
+	if (!empty($item) && $item != '/' && $action != 'url')
+		$action = 'jump';
+	elseif ($action == 'jump' && empty($item))
+		$action = 'default';
+
+	http_response_code(200);
 	switch ($action) {
+		default:
+  			if (function_exists("http_response_code"))
+                        	http_response_code(400);
+                	apiLoadLanguage('help');
+                	exit;
 		case 'jump':
 			$data = jumpFromShortenURL($item);
 			break;

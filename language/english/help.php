@@ -94,6 +94,8 @@ global $domain, $protocol, $business, $entity, $contact, $referee, $peerings, $s
     <p>This is an API Service for creating short URLs from this API!</p>
     <h2>Code API Documentation</h2>
     <p>You can find the phpDocumentor code API documentation at the following path :: <a target="_blank" href="<?php echo $source; ?>docs/" target="_blank"><?php echo $source; ?>docs/</a>. These should outline the source code core functions and classes for the API to function!</p>
+    <h2>API Traffic Statistics</h2>
+    <p>You can find AWStats with the API traffic statistic updated every 20 minutes at the following path :: <a target="_blank" href="<?php echo $source; ?>awstats/awstats.pl" target="_blank"><?php echo $source; ?>awstats/awstats.pl</a>.</p>
     <h2>Shorten URL Document Output</h2>
     <p>This is done with the <em>url.api</em> extension at the end of the url.</p>
     <blockquote>

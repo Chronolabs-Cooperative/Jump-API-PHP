@@ -594,7 +594,7 @@ function jumpShortenURL($url = '')
 	$hostname = array_reverse(explode('.', $_SERVER['HTTP_HOST']));
 	if (!is_dir(API_PATH_IO_REFEREE))
 		mkdirSecure(API_PATH_IO_REFEREE, 0777);
-	if (!is_file($file = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . 'urls-pointeers.json'))
+	if (!is_file($file = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . basename(__DIR__) . '.json'))
 		$jumps = array();
 	else 
 		$jumps = json_decode(file_get_contents($file), true);
@@ -611,15 +611,15 @@ function jumpShortenURL($url = '')
 			$referee = $crc->calc($url);
 		}
 	}
-	if (!is_file($file = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . 'urls-pointeers.json'))
+	if (!is_file($file = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . basename(__DIR__) . '.json'))
                 $jumps = array();
         else
                 $jumps = json_decode(file_get_contents($file), true);
 	foreach($jumps as $finger => $values)
         {
                 if (isset($values['last']) && isset($values['inactive']))
-                        if ($values['last'] < microtime(true) - $values['inactive'])
-                                unset($jumps[$finger]);
+                        if ($values['last'] + $values['inactive'] < microtime(true))
+                                 unset($jumps[$finger]);
         }
  	$result = $jumps[$hash = md5($url.$referee.microtime(true))] = array("created" => microtime(true), "last" => microtime(true), 'inactive' => (API_DROP_DAYS_INACTIVE * (3600 * 24)), "short" => API_PROTOCOL.API_HOSTNAME.'/'.$referee, "domain" => API_PROTOCOL.$referee.'.'.API_HOSTNAME, 'url' => $url, 'referee' => $referee);
         writeRawFile($file, json_encode($jumps));
@@ -637,14 +637,14 @@ function jumpFromShortenURL($hash = '')
 	$hostname = array_reverse(explode('.', $_SERVER['HTTP_HOST']));
 	if (!is_dir(API_PATH_IO_REFEREE))
 		mkdirSecure(API_PATH_IO_REFEREE, 0777);
-	if (!is_file($file = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . 'urls-pointeers.json'))
+	if (!is_file($file = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . basename(__DIR__) . '.json'))
 		$jumps = array();
 	else 
 		$jumps = json_decode(file_get_contents($file), true);
 	foreach($jumps as $finger => $values)
 	{
 		if (isset($values['last']) && isset($values['inactive']))
-			if ($values['last'] < microtime(true) - $values['inactive'])
+			if ($values['last'] + $values['inactive'] < microtime(true))
 				unset($jumps[$finger]);
 	}
 	foreach($jumps as $finger => $values)
@@ -684,15 +684,15 @@ function testForShortenURL($hash = '')
         $hostname = array_reverse(explode('.', $_SERVER['HTTP_HOST']));
         if (!is_dir(API_PATH_IO_REFEREE))
                 mkdirSecure(API_PATH_IO_REFEREE, 0777);
-        if (!is_file($file = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . 'urls-pointeers.json'))
+        if (!is_file($file = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . basename(__DIR__) . '.json'))
                 $jumps = array();
         else 
                 $jumps = json_decode(file_get_contents($file), true);
 	foreach($jumps as $finger => $values)
 	{
-		if (isset($values['last']) && isset($values['inactive']))
-			if ($values['last'] < microtime(true) - $values['inactive'])
-				unset($jumps[$finger]);
+                if (isset($values['last']) && isset($values['inactive']))
+                        if ($values['last'] + $values['inactive'] < microtime(true))
+                                unset($jumps[$finger]);
 	}
         foreach($jumps as $finger => $values)
         {
