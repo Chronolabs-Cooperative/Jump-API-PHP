@@ -1,11 +1,11 @@
-# Jump URL Shortened API ~ http://jump.labs.coop
+# Jump URL Shortened API ~ http://jump.snails.email
 ## Author: Simon Antony Roberts (c) 2016
-## Contact: simon@staff.labs.coop
+## Contact: simon@snails.email
 
  * This is also distributed under acedemic licencing as well as general public licence 3.0 (GPL3)
 
 ## Shortening API Installation
-You have to take the files from this respository and mount them in a path which is the subpath or path of the url base level used to access the service, say you are accessing 2.labs.coop then the files would natively on ubuntu run in /var/www/2.labs.coop/...
+You have to take the files from this respository and mount them in a path which is the subpath or path of the url base level used to access the service, say you are accessing 2.snails.email then the files would natively on ubuntu run in /var/www/2.snails.email/...
 
 It is very imporant you resolve this domain with the path folder for it containing the path of the URL being access to use this service!
 
@@ -26,7 +26,7 @@ This PHP example with the function used to use php-curl with post header variabl
      		/* function getURIData()
      		 * cURL Routine for passing $_POST Variable and retreiving URL
      		 * 
-     		 * @author Simon Roberts (Chronolabs Cooperative) simon@staff.labs.coop
+     		 * @author Simon Roberts (Chronolabs Cooperative) simon@staff.snails.email
      		 *
      		 * @param $url string
      		 * @param $timeout integer
@@ -65,76 +65,76 @@ This PHP example with the function used to use php-curl with post header variabl
      	 * 
      	 */
 
-     $json = json_decode(getURIData('http://jump.labs.coop/v2/url.api', 45, 45, 
+     $json = json_decode(getURIData('http://jump.snails.email/v2/url.api', 45, 45, 
                          array('response'=>'json', 
-                               'url'=>'http://cipher.labs.coop/?s=openrend'))
+                               'url'=>'http://cipher.snails.email/?s=openrend'))
      								, true);
 
 ## API Services Operate on the following URLs
 
 The following URL can be used to Shortening a URL, they are the following domains with this API on it:-
 
-     2.labs.coop
-     biff.labs.coop
-     bong.labs.coop
-     bowl.labs.coop
-     clean.labs.coop
-     cross.labs.coop
-     drink.labs.coop
-     drive.labs.coop
-     drop.labs.coop
-     dug.labs.coop
-     eat.labs.coop
-     ebe.labs.coop
-     empty.labs.coop
-     fall.labs.coop
-     flush.labs.coop
-     force.labs.coop
-     get.labs.coop
-     gibs.labs.coop
-     go.labs.coop
-     gun.labs.coop
-     hop.labs.coop
-     in.labs.coop
-     jo.labs.coop
-     joe.labs.coop
-     jolo.labs.coop
-     jump.labs.coop
-     kick.labs.coop
-     liff.labs.coop
-     light.labs.coop
-     link.labs.coop
-     live.labs.coop
-     mt.labs.coop
-     multi.labs.coop
-     out.labs.coop
-     phet.labs.coop
-     pill.labs.coop
-     pin.labs.coop
-     pipe.labs.coop
-     pow.labs.coop
-     pull.labs.coop
-     push.labs.coop
-     real.labs.coop
-     ride.labs.coop
-     riff.labs.coop
-     run.labs.coop
-     scoot.labs.coop
-     shazam.labs.coop
-     shine.labs.coop
-     skate.labs.coop
-     skid.labs.coop
-     slide.labs.coop
-     spill.labs.coop
-     stash.labs.coop
-     to.labs.coop
-     too.labs.coop
-     tray.labs.coop
-     ufo.labs.coop
-     uni.labs.coop
-     walk.labs.coop
-     why.labs.coop
-     xtc.labs.coop
+     http://2.snails.email
+     http://biff.snails.email
+     http://bong.snails.email
+     http://bowl.snails.email
+     http://clean.snails.email
+     http://cross.snails.email
+     http://drink.snails.email
+     http://drive.snails.email
+     http://drop.snails.email
+     http://dug.snails.email
+     http://eat.snails.email
+     http://ebe.snails.email
+     http://empty.snails.email
+     http://fall.snails.email
+     http://flush.snails.email
+     http://force.snails.email
+     http://get.snails.email
+     http://gibs.snails.email
+     http://go.snails.email
+     http://gun.snails.email
+     http://hop.snails.email
+     http://in.snails.email
+     http://jo.snails.email
+     http://joe.snails.email
+     http://jolo.snails.email
+     http://jump.snails.email
+     http://kick.snails.email
+     http://liff.snails.email
+     http://light.snails.email
+     http://link.snails.email
+     http://live.snails.email
+     http://mt.snails.email
+     http://multi.snails.email
+     http://out.snails.email
+     http://phet.snails.email
+     http://pill.snails.email
+     http://pin.snails.email
+     http://pipe.snails.email
+     http://pow.snails.email
+     http://pull.snails.email
+     http://push.snails.email
+     http://real.snails.email
+     http://ride.snails.email
+     http://riff.snails.email
+     http://run.snails.email
+     http://scoot.snails.email
+     http://shazam.snails.email
+     http://shine.snails.email
+     http://skate.snails.email
+     http://skid.snails.email
+     http://slide.snails.email
+     http://spill.snails.email
+     http://stash.snails.email
+     http://to.snails.email
+     http://too.snails.email
+     http://tray.snails.email
+     http://ufo.snails.email
+     http://uni.snails.email
+     http://walk.snails.email
+     http://why.snails.email
+     http://xtc.snails.email
      
      
 ## Source for Education Exercise with this package
