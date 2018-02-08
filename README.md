@@ -87,6 +87,7 @@ The following URL can be used to Shortening a URL, they are the following domain
      http://eat.snails.email
      http://ebe.snails.email
      http://empty.snails.email
+     http://extasy.snails.email
      http://fall.snails.email
      http://flush.snails.email
      http://force.snails.email
@@ -101,12 +102,15 @@ The following URL can be used to Shortening a URL, they are the following domain
      http://jolo.snails.email
      http://jump.snails.email
      http://kick.snails.email
+     http://lie.snails.email
+     http://lies.snails.email
      http://liff.snails.email
      http://light.snails.email
      http://link.snails.email
      http://live.snails.email
      http://mt.snails.email
      http://multi.snails.email
+     http://no.snails.email
      http://out.snails.email
      http://phet.snails.email
      http://pill.snails.email
@@ -130,11 +134,15 @@ The following URL can be used to Shortening a URL, they are the following domain
      http://to.snails.email
      http://too.snails.email
      http://tray.snails.email
+     http://truth.snails.email
+     http://truths.snails.email
      http://ufo.snails.email
      http://uni.snails.email
      http://walk.snails.email
      http://why.snails.email
      http://xtc.snails.email
+     http://yes.snails.email
+
      
      
 ## Source for Education Exercise with this package
