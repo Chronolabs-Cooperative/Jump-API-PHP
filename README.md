@@ -108,6 +108,7 @@ The following URL can be used to Shortening a URL, they are the following domain
      http://light.snails.email
      http://link.snails.email
      http://live.snails.email
+     http://maybe.snails.email
      http://mt.snails.email
      http://multi.snails.email
      http://no.snails.email
