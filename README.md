@@ -1,6 +1,12 @@
 # Jump URL Shortened API ~ http://jump.snails.email
-## Author: Simon Antony Roberts (c) 2016
+
+## Author: Simon Antony Roberts (c) 2019 <wishcraft@users.sourceforge.net>
+
 ## Contact: simon@snails.email
+
+### Version: 1.2.2
+
+### Demo: http://jump.snails.email
 
  * This is also distributed under acedemic licencing as well as general public licence 3.0 (GPL3)
 
@@ -70,82 +76,6 @@ This PHP example with the function used to use php-curl with post header variabl
                                'url'=>'http://cipher.snails.email/?s=openrend'))
      								, true);
 
-## API Services Operate on the following URLs
-
-The following URL can be used to Shortening a URL, they are the following domains with this API on it:-
-
-     http://2.snails.email
-     http://biff.snails.email
-     http://bong.snails.email
-     http://bowl.snails.email
-     http://clean.snails.email
-     http://cross.snails.email
-     http://drink.snails.email
-     http://drive.snails.email
-     http://drop.snails.email
-     http://dug.snails.email
-     http://eat.snails.email
-     http://ebe.snails.email
-     http://empty.snails.email
-     http://extasy.snails.email
-     http://fall.snails.email
-     http://flush.snails.email
-     http://force.snails.email
-     http://get.snails.email
-     http://gibs.snails.email
-     http://go.snails.email
-     http://gun.snails.email
-     http://hop.snails.email
-     http://in.snails.email
-     http://jo.snails.email
-     http://joe.snails.email
-     http://jolo.snails.email
-     http://jump.snails.email
-     http://kick.snails.email
-     http://lie.snails.email
-     http://lies.snails.email
-     http://liff.snails.email
-     http://light.snails.email
-     http://link.snails.email
-     http://live.snails.email
-     http://maybe.snails.email
-     http://mt.snails.email
-     http://multi.snails.email
-     http://no.snails.email
-     http://out.snails.email
-     http://phet.snails.email
-     http://pill.snails.email
-     http://pin.snails.email
-     http://pipe.snails.email
-     http://pow.snails.email
-     http://pull.snails.email
-     http://push.snails.email
-     http://real.snails.email
-     http://ride.snails.email
-     http://riff.snails.email
-     http://run.snails.email
-     http://scoot.snails.email
-     http://shazam.snails.email
-     http://shine.snails.email
-     http://skate.snails.email
-     http://skid.snails.email
-     http://slide.snails.email
-     http://spill.snails.email
-     http://stash.snails.email
-     http://to.snails.email
-     http://too.snails.email
-     http://tray.snails.email
-     http://truth.snails.email
-     http://truths.snails.email
-     http://ufo.snails.email
-     http://uni.snails.email
-     http://walk.snails.email
-     http://why.snails.email
-     http://xtc.snails.email
-     http://yes.snails.email
-
-     
-     
 ## Source for Education Exercise with this package
 You will be able to email Prof. Matthew Roberts <matthew.roberts@mq.edu.au> who is an IT teacher and lecture as a teacher of any University, Multiversity or Secondary school for excerises and examples for this open source package to use as a teaching tool.
      

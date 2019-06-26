@@ -29,7 +29,7 @@ h1, .headerone {
 h2, .headertwo {
 	font-family: "Labtop Bold" !important;
 	font-weight:500;
-	font-size:1.15em;
+	font-size: 184.6502% !important;
 	text-shadow: 4px 4px 2px rgba(150, 150, 150, 1);
 }
 blockquote, .blockquote {
@@ -87,6 +87,7 @@ pre, .preblock {
 p, .paragraph {
 	font-family: "Labtop Thin", "Trebuchet MS", Arial, Helvetica, sans-serif;
 	margin-bottom:12px;
+	font-size: 212.6502% !important;
 }
 
 input, button, textarea, radio, select, label
