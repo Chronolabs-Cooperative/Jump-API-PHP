@@ -221,46 +221,69 @@ if (!function_exists("apiLoadLanguage")) {
 
 
 if (!function_exists("getURIData")) {
-
-	/**
-	 * getURIData() ~ get data from a URI/URL
-	 * 
-	 * @param string $uri
-	 * @param array $posts
-	 * @param getURIData $headers
-	 * @param integer $timeout
-	 * @param integer $connectout
-	 * @return string
-	 */
-	function getURIData($uri = '', $posts = array(), $headers = array(), $timeout = 36, $connectout = 44)
-	{
-		if (!function_exists("curl_init"))
-		{
-			return file_get_contents($uri);
-		}
-		if (!$btt = curl_init($uri)) {
-			return false;
-		}
-		if (count($headers)) {
-			curl_setopt($btt, CURLOPT_HEADER, true);
-			curl_setopt($btt, CURLOPT_HEADERS, $headers);
-		} else
-			curl_setopt($btt, CURLOPT_HEADER, 0);
-		if (count($posts)) {
-			curl_setopt($btt, CURLOPT_POST, true);
-			curl_setopt($btt, CURLOPT_POSTFIELDS, http_build_query($posts));
-		} else
-			curl_setopt($btt, CURLOPT_POST, 0);
-		curl_setopt($btt, CURLOPT_CONNECTTIMEOUT, $connectout);
-		curl_setopt($btt, CURLOPT_TIMEOUT, $timeout);
-		curl_setopt($btt, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($btt, CURLOPT_VERBOSE, false);
-		curl_setopt($btt, CURLOPT_SSL_VERIFYHOST, false);
-		curl_setopt($btt, CURLOPT_SSL_VERIFYPEER, false);
-		$data = curl_exec($btt);
-		curl_close($btt);
-		return $data;
-	}
+    
+    /* function yonkURIData()
+     *
+     * 	Get a supporting domain system for the API
+     * @author 		Simon Roberts (Chronolabs) simon@labs.coop
+     *
+     * @return 		float()
+     */
+    function getURIData($uri = '', $timeout = 25, $connectout = 25, $post = array(), $headers = array())
+    {
+        if (!function_exists("curl_init"))
+        {
+            die("Install PHP Curl Extension ie: $ sudo apt-get install php-curl -y");
+        }
+        $GLOBALS['php-curl'][md5($uri)] = array();
+        if (!$btt = curl_init($uri)) {
+            return false;
+        }
+        if (count($post)==0 || empty($post))
+            curl_setopt($btt, CURLOPT_POST, false);
+            else {
+                $uploadfile = false;
+                foreach($post as $field => $value)
+                    if (substr($value , 0, 1) == '@' && !file_exists(substr($value , 1, strlen($value) - 1)))
+                        unset($post[$field]);
+                        else
+                            $uploadfile = true;
+                            curl_setopt($btt, CURLOPT_POST, true);
+                            curl_setopt($btt, CURLOPT_POSTFIELDS, http_build_query($post));
+                            
+                            if (!empty($headers))
+                                foreach($headers as $key => $value)
+                                    if ($uploadfile==true && substr($value, 0, strlen('Content-Type:')) == 'Content-Type:')
+                                        unset($headers[$key]);
+                                        if ($uploadfile==true)
+                                            $headers[]  = 'Content-Type: multipart/form-data';
+            }
+            if (count($headers)==0 || empty($headers))
+                curl_setopt($btt, CURLOPT_HEADER, false);
+                else {
+                    curl_setopt($btt, CURLOPT_HEADER, true);
+                    curl_setopt($btt, CURLOPT_HTTPHEADER, $headers);
+                }
+                curl_setopt($btt, CURLOPT_CONNECTTIMEOUT, $connectout);
+                curl_setopt($btt, CURLOPT_TIMEOUT, $timeout);
+                curl_setopt($btt, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($btt, CURLOPT_VERBOSE, false);
+                curl_setopt($btt, CURLOPT_SSL_VERIFYHOST, false);
+                curl_setopt($btt, CURLOPT_SSL_VERIFYPEER, false);
+                $data = curl_exec($btt);
+                $GLOBALS['php-curl'][md5($uri)]['http']['posts'] = $post;
+                $GLOBALS['php-curl'][md5($uri)]['http']['headers'] = $headers;
+                $GLOBALS['php-curl'][md5($uri)]['http']['code'] = curl_getinfo($btt, CURLINFO_HTTP_CODE);
+                $GLOBALS['php-curl'][md5($uri)]['header']['size'] = curl_getinfo($btt, CURLINFO_HEADER_SIZE);
+                $GLOBALS['php-curl'][md5($uri)]['header']['value'] = curl_getinfo($btt, CURLINFO_HEADER_OUT);
+                $GLOBALS['php-curl'][md5($uri)]['size']['download'] = curl_getinfo($btt, CURLINFO_SIZE_DOWNLOAD);
+                $GLOBALS['php-curl'][md5($uri)]['size']['upload'] = curl_getinfo($btt, CURLINFO_SIZE_UPLOAD);
+                $GLOBALS['php-curl'][md5($uri)]['content']['length']['download'] = curl_getinfo($btt, CURLINFO_CONTENT_LENGTH_DOWNLOAD);
+                $GLOBALS['php-curl'][md5($uri)]['content']['length']['upload'] = curl_getinfo($btt, CURLINFO_CONTENT_LENGTH_UPLOAD);
+                $GLOBALS['php-curl'][md5($uri)]['content']['type'] = curl_getinfo($btt, CURLINFO_CONTENT_TYPE);
+                curl_close($btt);
+                return $data;
+    }
 }
 
 
@@ -537,52 +560,211 @@ if (!function_exists("whitelistGetNetBIOSIP")) {
 	}
 }
 
-if (!function_exists("whitelistGetIP")) {
-
-	/* function whitelistGetIP()
-	 *
-	* 	get the True IPv4/IPv6 address of the client using the API
-	* @author 		Simon Roberts (Chronolabs) simon@labs.coop
-	*
-	* @param		$asString	boolean		Whether to return an address or network long integer
-	*
-	* @return 		mixed
-	*/
-	function whitelistGetIP($asString = true){
-		// Gets the proxy ip sent by the user
-		$proxy_ip = '';
-		if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-			$proxy_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-		} else
-		if (!empty($_SERVER['HTTP_X_FORWARDED'])) {
-			$proxy_ip = $_SERVER['HTTP_X_FORWARDED'];
-		} else
-		if (! empty($_SERVER['HTTP_FORWARDED_FOR'])) {
-			$proxy_ip = $_SERVER['HTTP_FORWARDED_FOR'];
-		} else
-		if (!empty($_SERVER['HTTP_FORWARDED'])) {
-			$proxy_ip = $_SERVER['HTTP_FORWARDED'];
-		} else
-		if (!empty($_SERVER['HTTP_VIA'])) {
-			$proxy_ip = $_SERVER['HTTP_VIA'];
-		} else
-		if (!empty($_SERVER['HTTP_X_COMING_FROM'])) {
-			$proxy_ip = $_SERVER['HTTP_X_COMING_FROM'];
-		} else
-		if (!empty($_SERVER['HTTP_COMING_FROM'])) {
-			$proxy_ip = $_SERVER['HTTP_COMING_FROM'];
-		}
-		if (!empty($proxy_ip) && $is_ip = preg_match('/^([0-9]{1,3}.){3,3}[0-9]{1,3}/', $proxy_ip, $regs) && count($regs) > 0)  {
-			$the_IP = $regs[0];
-		} else {
-			$the_IP = $_SERVER['REMOTE_ADDR'];
-		}
-			
-		$the_IP = ($asString) ? $the_IP : ip2long($the_IP);
-		return $the_IP;
-	}
+if (!function_exists("getIP")) {
+    
+    /* function whitelistGetIP()
+     *
+     * 	get the True IPv4/IPv6 address of the client using the API
+     * @author 		Simon Roberts (Chronolabs) simon@labs.coop
+     *
+     * @param		boolean		$asString	Whether to return an address or network long integer
+     *
+     * @return 		mixed
+     */
+    function getIP($asString = true){
+        // Gets the proxy ip sent by the user
+        $proxy_ip = '';
+        if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $proxy_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } else
+            if (!empty($_SERVER['HTTP_X_FORWARDED'])) {
+                $proxy_ip = $_SERVER['HTTP_X_FORWARDED'];
+            } else
+                if (! empty($_SERVER['HTTP_FORWARDED_FOR'])) {
+                    $proxy_ip = $_SERVER['HTTP_FORWARDED_FOR'];
+                } else
+                    if (!empty($_SERVER['HTTP_FORWARDED'])) {
+                        $proxy_ip = $_SERVER['HTTP_FORWARDED'];
+                    } else
+                        if (!empty($_SERVER['HTTP_VIA'])) {
+                            $proxy_ip = $_SERVER['HTTP_VIA'];
+                        } else
+                            if (!empty($_SERVER['HTTP_X_COMING_FROM'])) {
+                                $proxy_ip = $_SERVER['HTTP_X_COMING_FROM'];
+                            } else
+                                if (!empty($_SERVER['HTTP_COMING_FROM'])) {
+                                    $proxy_ip = $_SERVER['HTTP_COMING_FROM'];
+                                }
+                            if (!empty($proxy_ip) && $is_ip = preg_match('/^([0-9]{1,3}.){3,3}[0-9]{1,3}/', $proxy_ip, $regs) && count($regs) > 0)  {
+                                $the_IP = $regs[0];
+                            } else {
+                                $the_IP = $_SERVER['REMOTE_ADDR'];
+                            }
+                            $the_IP = ($asString) ? $the_IP : ip2long($the_IP);
+                            return $the_IP;
+    }
 }
 
+
+if (!function_exists("getNetbios")) {
+    
+    /* function whitelistGetIP()
+     *
+     * 	get the True IPv4/IPv6 address of the client using the API
+     * @author 		Simon Roberts (Chronolabs) simon@labs.coop
+     *
+     * @param		boolean		$asString	Whether to return an address or network long integer
+     *
+     * @return 		mixed
+     */
+    function getNetbios() {
+        // Gets the proxy ip sent by the user
+        $proxy_ip = '';
+        if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $proxy_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } else
+            if (!empty($_SERVER['HTTP_X_FORWARDED'])) {
+                $proxy_ip = $_SERVER['HTTP_X_FORWARDED'];
+            } else
+                if (! empty($_SERVER['HTTP_FORWARDED_FOR'])) {
+                    $proxy_ip = $_SERVER['HTTP_FORWARDED_FOR'];
+                } else
+                    if (!empty($_SERVER['HTTP_FORWARDED'])) {
+                        $proxy_ip = $_SERVER['HTTP_FORWARDED'];
+                    } else
+                        if (!empty($_SERVER['HTTP_VIA'])) {
+                            $proxy_ip = $_SERVER['HTTP_VIA'];
+                        } else
+                            if (!empty($_SERVER['HTTP_X_COMING_FROM'])) {
+                                $proxy_ip = $_SERVER['HTTP_X_COMING_FROM'];
+                            } else
+                                if (!empty($_SERVER['HTTP_COMING_FROM'])) {
+                                    $proxy_ip = $_SERVER['HTTP_COMING_FROM'];
+                                }
+                            if (!empty($proxy_ip) && $is_ip = preg_match('/^([0-9]{1,3}.){3,3}[0-9]{1,3}/', $proxy_ip, $regs) && count($regs) > 0)  {
+                                $the_IP = $regs[0];
+                            } else {
+                                $the_IP = $_SERVER['REMOTE_ADDR'];
+                            }
+                            return gethostbyaddr($the_IP);
+    }
+}
+
+/**
+ * get A + AAAA record for $host
+ *
+ * if $try_a is true, if AAAA fails, it tries for A the first match found is returned otherwise returns false
+ *
+ * @param   host    string      netbios networking name\
+ * @param   try_a   boolean     try for A Record inclusive of AAAA Records
+ *
+ * return array
+ */
+if (!function_exists("getHostByName6")) {
+    function getHostByName6($host, $try_a = false) {
+        $dns6 = dns_get_record($host, DNS_AAAA);
+        if ($try_a == true) {
+            $dns4 = getHostByName($host);
+            $dns = array_merge($dns4, $dns6);
+        }
+        else { $dns = $dns6; }
+        if ($dns == false) { return false; }
+        else { return $dns; }
+    }
+}
+
+
+/**
+ * get A + AAAA record IPv4/IPv6 Addresses for $host
+ *
+ * if $try_a is true, if AAAA fails, it tries for A the first match found is returned otherwise returns false
+ *
+ * @param   host    string      netbios networking name
+ * @param   try_a   boolean     try for A Record inclusive of AAAA Records
+ *
+ * return array
+ */
+if (!function_exists("getHostByNamel6")) {
+    function getHostByNamel6($host, $try_a = false) {
+        
+        $dns6 = dns_get_record($host, DNS_AAAA);
+        if ($try_a == true) {
+            $dns4 = getHostByName($host);
+            $dns = array_merge($dns4, $dns6);
+        }
+        else { $dns = $dns6; }
+        $ip6 = array();
+        $ip4 = array();
+        foreach ($dns as $record) {
+            if ($record["type"] == "A") {
+                $ip4[] = $record["ip"];
+            }
+            if ($record["type"] == "AAAA") {
+                $ip6[] = $record["ipv6"];
+            }
+        }
+        if (count($ip6) < 1) {
+            if ($try_a == true) {
+                if (count($ip4) < 1) {
+                    return false;
+                }
+                else {
+                    return $ip4;
+                }
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return $ip6;
+        }
+    }
+}
+
+/**
+ * get A record for $host
+ *
+ * if $try_a is true, if AAAA fails, it tries for A the first match found is returned otherwise returns false
+ *
+ * @param   host    string      netbios networking name
+ *
+ * return array
+ */
+if (!function_exists("getHostByName")) {
+    function getHostByName($host) {
+        $dns = dns_get_record($host, DNS_A);
+        if ($dns == false) { return false; }
+        else { return $dns; }
+    }
+}
+
+/**
+ * get A record IPv4 Addresses for $host
+ *
+ * if $try_a is true, if AAAA fails, it tries for A the first match found is returned otherwise returns false
+ *
+ * @param   host    string      netbios networking name
+ *
+ * return array
+ */
+if (!function_exists("getHostByNamel")) {
+    function getHostByNamel($host) {
+        $dns4 = getHostByName($host);
+        $ip4 = array();
+        foreach ($dns4 as $record) {
+            if ($record["type"] == "A") {
+                $ip4[] = $record["ip"];
+            }
+        }
+        if (count($ip4) < 1) {
+            return false;
+        }
+        else {
+            return $ip4;
+        }
+    }
+}
 
 /**
  * 
@@ -611,18 +793,44 @@ function jumpShortenURL($url = '')
 			$referee = $crc->calc($url);
 		}
 	}
-	if (!is_file($file = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . basename(__DIR__) . '.json'))
-                $jumps = array();
+	if (!is_file($jumpfile = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . API_HOSTNAME . '.json'))
+        $jumps = array();
+    else
+        $jumps = json_decode(file_get_contents($jumpfile), true);
+    
+    if (!is_file($emailfile = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . API_HOSTNAME . '.emails.json'))
+        $emails = array();
+    else
+        $emails = json_decode(file_get_contents($emailfile), true);
+    
+    if (constant('API_DEPLOYMENT_CALLING') == true) {
+        require_once dirname(__DIR__) . DS . 'class' . DS . 'myip.php';
+        $myip = new myip();
+        $ipdata = $myip->query('allmyip', 'json');
+        if (!is_file($callfile = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . API_HOSTNAME . '.calling.json'))
+            $calls = array();
         else
-                $jumps = json_decode(file_get_contents($file), true);
-	foreach($jumps as $finger => $values)
-        {
-                if (isset($values['last']) && isset($values['inactive']))
-                        if ($values['last'] + $values['inactive'] < microtime(true))
-                                 unset($jumps[$finger]);
-        }
-        $result = $jumps[$hash = md5($url.$referee.microtime(true))] = array("created" => microtime(true), "last" => microtime(true), 'inactive' => (API_DROP_DAYS_INACTIVE * (3600 * 24)), "short" => API_PROTOCOL.API_HOSTNAME.'/v2/'.$referee, "domain" => API_PROTOCOL.$referee.'.'.API_HOSTNAME, 'url' => $url, 'referee' => $referee, 'timezone' => date_default_timezone_get(), 'data' => array('php' => API_PROTOCOL.API_HOSTNAME.'/php/'.$referee, 'json' => API_PROTOCOL.API_HOSTNAME.'/json/'.$referee, 'serial' => API_PROTOCOL.API_HOSTNAME.'/serial/'.$referee, 'xml' => API_PROTOCOL.API_HOSTNAME.'/xml/'.$referee));
-        writeRawFile($file, json_encode($jumps));
+            $calls = json_decode(file_get_contents($callfile), true);
+    }
+    foreach($jumps as $finger => $values)
+    {
+        if (isset($values['last']) && isset($values['inactive']))
+            if ($values['last'] + $values['inactive'] < microtime(true)) {
+                $calls['expire'][$finger][time()] = array_merge(array('ipdata' => $ipdata), $emails[$finger], $jumps[$finger], array('hostname' => parse_url(API_URL, PHP_URL_HOST)));
+                unset($jumps[$finger]);
+                unset($emails[$finger]);
+            }
+    }
+    $result = $jumps[$hash = md5($url.$referee.microtime(true))] = array("created" => microtime(true), "last" => microtime(true), 'inactive' => (API_DROP_DAYS_INACTIVE * (3600 * 24)), "short" => API_PROTOCOL.API_HOSTNAME.'/v2/'.$referee . (isset($_REQUEST['username']) && !empty($_REQUEST['username']) ? '?' . $_REQUEST['username'] :''), "domain" => API_PROTOCOL.$referee.'.'.API_HOSTNAME  . (isset($_REQUEST['username']) && !empty($_REQUEST['username']) ? '/?' . $_REQUEST['username'] :''), 'url' => $url, 'referee' => $referee, 'timezone' => date_default_timezone_get(), 'data' => array('php' => API_PROTOCOL.API_HOSTNAME.'/php/'.$referee, 'json' => API_PROTOCOL.API_HOSTNAME.'/json/'.$referee, 'serial' => API_PROTOCOL.API_HOSTNAME.'/serial/'.$referee, 'xml' => API_PROTOCOL.API_HOSTNAME.'/xml/'.$referee));
+    $emails[$hash] = array('username' => $_REQUEST['username'], 'email' => $_REQUEST['email'], 'callback-hits' => $_REQUEST['callback-hits'], 'callback-stats' => $_REQUEST['callback-stats'], 'callback-reports' => $_REQUEST['callback-reports'], 'callback-expires' => $_REQUEST['callback-expires']);
+    if (constant('API_DEPLOYMENT_CALLING') == true) {
+        $calls['create'][$hash][time()] = array_merge(array('ipdata' => $ipdata), $emails[$hash], $jumps[$hash], array('hostname' => parse_url(API_URL, PHP_URL_HOST)));
+    }
+    writeRawFile($jumpfile, json_encode($jumps));
+    writeRawFile($emailfile, json_encode($emails));
+    if (constant('API_DEPLOYMENT_CALLING') == true) {
+        writeRawFile($callfile, json_encode($calls));
+    }
 	return $result;
 }
 
@@ -637,15 +845,35 @@ function jumpFromShortenURL($hash = '')
 	$hostname = array_reverse(explode('.', $_SERVER['HTTP_HOST']));
 	if (!is_dir(API_PATH_IO_REFEREE))
 		mkdirSecure(API_PATH_IO_REFEREE, 0777);
-	if (!is_file($file = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . basename(__DIR__) . '.json'))
-		$jumps = array();
-	else 
-		$jumps = json_decode(file_get_contents($file), true);
+	
+	if (!is_file($jumpfile = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . API_HOSTNAME . '.json'))
+	    $jumps = array();
+    else
+        $jumps = json_decode(file_get_contents($jumpfile), true);
+	        
+	if (!is_file($emailfile = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . API_HOSTNAME . '.emails.json'))
+	    $emails = array();
+    else
+        $emails = json_decode(file_get_contents($emailfile), true);
+	
+	if (constant('API_DEPLOYMENT_CALLING') == true) {
+	    require_once dirname(__DIR__) . DS . 'class' . DS . 'myip.php';
+	    $myip = new myip();
+	    $ipdata = $myip->query('allmyip', 'json');
+	    if (!is_file($callfile = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . API_HOSTNAME . '.calling.json'))
+	        $calls = array();
+        else
+            $calls = json_decode(file_get_contents($callfile), true);
+	}
+	
 	foreach($jumps as $finger => $values)
 	{
 		if (isset($values['last']) && isset($values['inactive']))
-			if ($values['last'] + $values['inactive'] < microtime(true))
-				unset($jumps[$finger]);
+		    if ($values['last'] + $values['inactive'] < microtime(true)) {
+		        $calls['expire'][$finger][time()] = array_merge(array('ipdata' => $ipdata), $emails[$finger], $jumps[$finger], array('hostname' => parse_url(API_URL, PHP_URL_HOST)));
+		        unset($jumps[$finger]);
+		        unset($emails[$finger]);
+		    }
 	}
 	foreach($jumps as $finger => $values)
 	{
@@ -656,7 +884,14 @@ function jumpFromShortenURL($hash = '')
 			else
 				$jumps[$finger]['hits']++;
 			$jumps[$finger]['last'] = microtime(true);
-			writeRawFile($file, json_encode($jumps));
+			writeRawFile($jumpfile, json_encode($jumps));
+			if (constant('API_DEPLOYMENT_CALLING') == true) {
+			    $calls['hit'][$finger][microtime(true)] = array_merge(array('ipdata' => $ipdata), $emails[$hash], $jumps[$hash], array('hostname' => parse_url(API_URL, PHP_URL_HOST)));
+			}
+			writeRawFile($emailfile, json_encode($emails));
+			if (constant('API_DEPLOYMENT_CALLING') == true) {
+			    writeRawFile($callfile, json_encode($calls));
+			}
 			
 			// Redirect to ensourced URI
 			header( "HTTP/1.1 301 Moved Permanently" );
@@ -666,7 +901,7 @@ function jumpFromShortenURL($hash = '')
 			
 		}
 	}
-	writeRawFile($file, json_encode($jumps)); 
+	writeRawFile($jumpfile, json_encode($jumps));
 
 	// Redirect to ensourced URI
 	header( "HTTP/1.1 301 Moved Permanently" );
@@ -681,23 +916,51 @@ function jumpFromShortenURL($hash = '')
  */
 function dataFromShortenURL($hash = '')
 {
-    $hostname = array_reverse(explode('.', $_SERVER['HTTP_HOST']));
+    
     if (!is_dir(API_PATH_IO_REFEREE))
         mkdirSecure(API_PATH_IO_REFEREE, 0777);
-    if (!is_file($file = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . basename(__DIR__) . '.json'))
+    
+    if (!is_file($jumpfile = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . API_HOSTNAME . '.json'))
         $jumps = array();
     else
-        $jumps = json_decode(file_get_contents($file), true);
+        $jumps = json_decode(file_get_contents($jumpfile), true);
+                
+    if (!is_file($emailfile = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . API_HOSTNAME . '.emails.json'))
+        $emails = array();
+    else
+        $emails = json_decode(file_get_contents($emailfile), true);
+                    
+    if (constant('API_DEPLOYMENT_CALLING') == true) {
+        require_once dirname(__DIR__) . DS . 'class' . DS . 'myip.php';
+        $myip = new myip();
+        $ipdata = $myip->query('allmyip', 'json');
+        if (!is_file($callfile = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . API_HOSTNAME . '.calling.json'))
+            $calls = array();
+        else
+            $calls = json_decode(file_get_contents($callfile), true);
+    }
+                        
     foreach($jumps as $finger => $values)
     {
         if (isset($values['last']) && isset($values['inactive']))
-            if ($values['last'] + $values['inactive'] < microtime(true))
+            if ($values['last'] + $values['inactive'] < microtime(true)) {
+                $calls['expire'][$finger][time()] = array_merge(array('ipdata' => $ipdata), $emails[$finger], $jumps[$finger], array('hostname' => parse_url(API_URL, PHP_URL_HOST)));
                 unset($jumps[$finger]);
+                unset($emails[$finger]);
+        }
     }
+    writeRawFile($jumpfile, json_encode($jumps));
+    writeRawFile($emailfile, json_encode($emails));
     foreach($jumps as $finger => $values)
     {
         if (strtolower($values['referee']) == strtolower($hash))
         {
+            if (constant('API_DEPLOYMENT_CALLING') == true) {
+                $calls['data'][$finger][microtime(true)] = array_merge(array('ipdata' => $ipdata), $emails[$finger], $jumps[$finger], array('hostname' => parse_url(API_URL, PHP_URL_HOST)));
+            }
+            if (constant('API_DEPLOYMENT_CALLING') == true) {
+                writeRawFile($callfile, json_encode($calls));
+            }
             return $values;
         }
     }

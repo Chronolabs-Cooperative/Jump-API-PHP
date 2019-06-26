@@ -25,6 +25,7 @@
 	define('MAXIMUM_QUERIES', 56);
 	ini_set('memory_limit', '32M');
 	
+	include_once __DIR__ . DIRECTORY_SEPARATOR . 'deployment.php';
 	require_once __DIR__ . DIRECTORY_SEPARATOR . 'apiconfig.php';
 	require_once __DIR__ . DIRECTORY_SEPARATOR . 'functions.php';
 	
@@ -38,7 +39,6 @@
 	} elseif (($action == 'jump' || $action == 'data') && !empty($_REQUEST['item']))
         $item = $_REQUEST['item'];
     
-	http_response_code(200);
 	switch ($action) {
 		default:
   			if (function_exists("http_response_code"))
@@ -57,6 +57,14 @@
 	}
 	
 	$response = (isset($_REQUEST['response'])?$_REQUEST['response']:'raw');
+	if (function_exists("http_response_code"))
+	    if (isset($data['code']) && !empty($data['code'])) {
+	        http_response_code($data['code']);
+	        unset($data['code']);
+	    } else {
+	        http_response_code(201);;
+	    }
+	    
 	// Send Responses
 	switch ($response) 
 	{

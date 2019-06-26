@@ -22,7 +22,7 @@
  * @link			https://github.com/Chronolabs-Cooperative/Jump-API-PHP
  */
 
-if (strlen($theip = whitelistGetIP(true))==0)
+if (strlen($theip = getIP(true))==0)
 	$theip = "127.0.0.1";
 
 $data = '';
@@ -123,8 +123,14 @@ global $domain, $protocol, $business, $entity, $contact, $referee, $peerings, $s
 			<label for="response-serial">Response formated PHP Serialisation</label><input type="radio" name="response" id="response-serial" value="serial"/>
 			<label for="response-xml">Response formated XML</label><input type="radio" name="response" id="response-xml" value="xml"/><br/>
 			<label for="url">URL/URI to shorten</label><input type="textbox" name="url" id="url" value="http://" size="36" maxlen="5000"/>
-			<label for="custom">Custom Referee Prefer</label><input type="textbox" name="custom" id="custom" value="" size="12" maxlen="128"/>
-			<input type="submit" id="submit" Value="Shorten URI/URL" />
+			<label for="custom">Custom Referee Prefer</label><input type="textbox" name="custom" id="custom" value="" size="12"/><br/>
+			<label for="username">Username on '<?php echo parse_url(API_DEPLOYMENT_URL, PHP_URL_HOST); ?>'</label><input type="textbox" name="username" id="username" value="" size="24" maxlen="64"/>
+			<label for="email">Your/Telephanist Contact Email</label><input type="textbox" name="email" id="email" value="" size="24" maxlen="200"/>
+			<br/ ><label for="callback-hits">Call Back URL for Hits</label><input type="textbox" name="callback-hits" id="callback-hits" value="" size="44" maxlen="200" />
+			<br/ ><label for="callback-stats">Call Back URL for Statistics</label><input type="textbox" name="callback-stats" id="callback-stats" value="" size="44" maxlen="200" />
+			<br/ ><label for="callback-reports">Call Back URL for Reports</label><input type="textbox" name="callback-reports" id="callback-reports" value="" size="44" maxlen="200" />
+			<br/ ><label for="callback-expires">Call Back URL for Expiry</label><input type="textbox" name="callback-expires" id="callback-expires" value="" size="44" maxlen="200" />
+			<br/ ><input type="submit" id="submit" Value="Shorten URI/URL" />
 		</form>
 		Example of Form:-
 		<pre class="preblock">
@@ -135,8 +141,14 @@ global $domain, $protocol, $business, $entity, $contact, $referee, $peerings, $s
 		&lt;label for=&quot;response-serial&quot;&gt;Response formated PHP Serialisation&nbsp&lt;/label&gt;&lt;input type=&quot;radio&quot; name=&quot;response&quot; id=&quot;response-serial&quot; value=&quot;serial&quot;/&gt;
 		&lt;label for=&quot;response-xml&quot;&gt;Response formated XML&nbsp&lt;/label&gt;&lt;input type=&quot;radio&quot; name=&quot;response&quot; id=&quot;response-xml&quot; value=&quot;xml&quot;/&gt;&lt;br/&gt;
 		&lt;label for=&quot;url&quot;&gt;URL/URI to shorten&lt;/label&gt;&lt;input type=&quot;textbox&quot; name=&quot;url&quot; id=&quot;url&quot; value=&quot;http://&quot; size=&quot;36&quot; maxlen=&quot;5000&quot;/&gt;
-                &lt;label for=&quot;custom&quot;&gt;Custom Referee Prefer&lt;/label&gt;&lt;input type=&quot;textbox&quot; name=&quot;custom&quot; id=&quot;custom&quot; value=&quot;&quot; size=&quot;12&quot; maxlen=&quot;128&quot;/&gt;
-		&lt;input type&quot;submit&quot; id=&quot;submit&quot; Value=&quot;Shorten URI/URL&quot; /&gt;
+        &lt;label for=&quot;custom&quot;&gt;Custom Referee Prefer&lt;/label&gt;&lt;input type=&quot;textbox&quot; name=&quot;custom&quot; id=&quot;custom&quot; value=&quot;&quot; size=&quot;12&quot; maxlen=&quot;128&quot;/&gt;&lt;br/&gt;
+		&lt;label for=&quot;username&quot;&gt;Username on '<?php echo parse_url(API_DEPLOYMENT_URL, PHP_URL_HOST); ?>'&lt;/label&gt;&lt;input type=&quot;textbox&quot; name=&quot;username&quot; id=&quot;username&quot; value=&quot;&quot; size=&quot;24&quot; maxlen=&quot;64&quot;/&gt;
+		&lt;label for=&quot;email&quot;&gt;Your/Telephanist Contact Email&lt;/label&gt;&lt;input type=&quot;textbox&quot; name=&quot;email&quot; id=&quot;email&quot; value=&quot;&quot; size=&quot;24&quot; maxlen=&quot;200&quot;/&gt;
+		&lt;br/ &gt;&lt;label for=&quot;callback-hits&quot;&gt;Call Back URL for Hits&lt;/label&gt;&lt;input type=&quot;textbox&quot; name=&quot;callback-hits&quot; id=&quot;callback-hits&quot; value=&quot;&quot; size=&quot;44&quot; maxlen=&quot;200&quot; /&gt;
+		&lt;br/ &gt;&lt;label for=&quot;callback-stats&quot;&gt;Call Back URL for Statistics&lt;/label&gt;&lt;input type=&quot;textbox&quot; name=&quot;callback-stats&quot; id=&quot;callback-stats&quot; value=&quot;&quot; size=&quot;44&quot; maxlen=&quot;200&quot; /&gt;
+		&lt;br/ &gt;&lt;label for=&quot;callback-reports&quot;&gt;Call Back URL for Reports&lt;/label&gt;&lt;input type=&quot;textbox&quot; name=&quot;callback-reports&quot; id=&quot;callback-reports&quot; value=&quot;&quot; size=&quot;44&quot; maxlen=&quot;200&quot; /&gt;
+		&lt;br/ &gt;&lt;label for=&quot;callback-expires&quot;&gt;Call Back URL for Expiry&lt;/label&gt;&lt;input type=&quot;textbox&quot; name=&quot;callback-expires&quot; id=&quot;callback-expires&quot; value=&quot;&quot; size=&quot;44&quot; maxlen=&quot;200&quot; /&gt;
+		&lt;br/ &gt;&lt;input type&quot;submit&quot; id=&quot;submit&quot; Value=&quot;Shorten URI/URL&quot; /&gt;
 	&lt;/form&gt;
 		</pre>
 		<br/><br/>
@@ -192,7 +204,7 @@ global $domain, $protocol, $business, $entity, $contact, $referee, $peerings, $s
     </blockquote>
     <div style="clear: both;">&nbsp;</div>
     <div style="clear: both;">&nbsp;</div>
-    <?php $services = explode("\n", file_get_contents("https://raw.githubusercontent.com/Chronolabs-Cooperative/Jump-API-PHP/master/services.txt")); ?>
+    <?php $services = explode("\n", file_get_contents(API_DEPLOYMENT_JUMPAPI_HOSTNAMES)); ?>
     <h2 class="headertwo">Shortening URL Services Operate on the following URLs</h2>
 	<p class="paragraph">The following URL can be used to Shortening a URL, they are the following domains with this API on it:-
 		<div style="margin-bottom: 13px; margin: 14px auto; width: 100%; clear: both; height: auto;"">
