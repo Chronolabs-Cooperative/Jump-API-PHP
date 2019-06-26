@@ -117,6 +117,8 @@ global $domain, $protocol, $business, $entity, $contact, $referee, $peerings, $s
     <p class="paragraph">This is done with the <em>url.api</em> extension at the end of the url.</p>
     <blockquote class="blockquote">
 		<form action="<?php echo API_URL; ?>/v2/url.api" method="post">
+			<label for="response-raw">Response formated RAW&nbsp</label><input type="radio" name="response" id="response-raw" value="raw" />
+			<label for="response-php">Response formated PHP&nbsp</label><input type="radio" name="response" id="response-php" value="php" />
 			<label for="response-json">Response formated JSON&nbsp</label><input type="radio" name="response" id="response-json" value="json" checked="checked"/>
 			<label for="response-serial">Response formated PHP Serialisation</label><input type="radio" name="response" id="response-serial" value="serial"/>
 			<label for="response-xml">Response formated XML</label><input type="radio" name="response" id="response-xml" value="xml"/><br/>
@@ -127,6 +129,8 @@ global $domain, $protocol, $business, $entity, $contact, $referee, $peerings, $s
 		Example of Form:-
 		<pre class="preblock">
 	&lt;form action=&quot;<?php echo API_URL; ?>/v2/url.api&quot; method=&quot;post&quot;&gt;
+		&lt;label for=&quot;response-raw&quot;&gt;Response formated RAW&nbsp&lt;/label&gt;&lt;input type=&quot;radio&quot; name=&quot;response&quot; id=&quot;response-raw&quot; value=&quot;raw&quot; /&gt;
+		&lt;label for=&quot;response-php&quot;&gt;Response formated PHP&nbsp&lt;/label&gt;&lt;input type=&quot;radio&quot; name=&quot;response&quot; id=&quot;response-php&quot; value=&quot;php&quot; /&gt;
 		&lt;label for=&quot;response-json&quot;&gt;Response formated JSON&nbsp&lt;/label&gt;&lt;input type=&quot;radio&quot; name=&quot;response&quot; id=&quot;response-json&quot; value=&quot;json&quot; checked=&quot;checked&quot;/&gt;
 		&lt;label for=&quot;response-serial&quot;&gt;Response formated PHP Serialisation&nbsp&lt;/label&gt;&lt;input type=&quot;radio&quot; name=&quot;response&quot; id=&quot;response-serial&quot; value=&quot;serial&quot;/&gt;
 		&lt;label for=&quot;response-xml&quot;&gt;Response formated XML&nbsp&lt;/label&gt;&lt;input type=&quot;radio&quot; name=&quot;response&quot; id=&quot;response-xml&quot; value=&quot;xml&quot;/&gt;&lt;br/&gt;
