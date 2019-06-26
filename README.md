@@ -1,10 +1,10 @@
-# Jump URL Shortened API ~ http://jump.snails.email
+## Chronolabs Cooperative presents
+
+# Jump URL Shortened API
 
 ## Author: Simon Antony Roberts (c) 2019 <wishcraft@users.sourceforge.net>
 
-## Contact: simon@snails.email
-
-### Version: 1.2.2
+### Version: 2.1.9
 
 ### Demo: http://jump.snails.email
 

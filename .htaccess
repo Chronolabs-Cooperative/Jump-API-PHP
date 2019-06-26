@@ -6,33 +6,29 @@
 ## @version	1.2.2
 ## 
 ## 
+
 RewriteEngine On
-RewriteCond %{HTTP_HOST} ([a-z0-9]){1,64}.localhost$
-RewriteCond %{HTTP_HOST} ([a-z0-9]){1,64}.snails.email$
-RewriteCond %{REQUEST_URI} ^assets(.*?)$ 
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{HTTP_HOST} (.*?).([a-z0-9]){1,64}.(localhost|snails.email)$
+RewriteRule ^$ ./index.php?action=jump&subdomain=1 [L,NC,QSA]
+
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ([a-z0-9]){1,64}.(localhost|snails.email)$
+RewriteCond %{REQUEST_URI} ^([a-z0-9]{2})/(.*?)$
+RewriteRule ^([a-z0-9]{2})/url.api$ ./index.php?action=url [L,NC,QSA]
+RewriteRule ^([a-z0-9]{2})/(.*?)$ ./index.php?action=jump&item=$2&version=$1 [L,NC,QSA]
+
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ([a-z0-9]){1,64}.(localhost|snails.email)$
+RewriteCond %{REQUEST_URI} ^assets/(.*?)$
 RewriteRule ^/(media|css|jquery|images)/(.*?)/(.*?)/(.*?).(.*?)$ ./assets/$1/$2/$3/$4.$5 [L,NC,QSA]
 RewriteRule ^/(media|css|jquery|images)/(.*?)/(.*?).(.*?)$ ./assets/$1/$2/$3.$4 [L,NC,QSA]
 RewriteRule ^/(media|css|jquery|images)/(.*?).(.*?)$ ./assets/$1/$2.$3 [L,NC,QSA]
 
 RewriteEngine On
-RewriteCond %{HTTP_HOST} ([a-z0-9]){1,64}.localhost$
-RewriteCond %{HTTP_HOST} ([a-z0-9]){1,64}.snails.email$
-RewriteCond %{REQUEST_URI} !^assets(.*?)$
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{HTTP_HOST} ([a-z0-9]){1,64}.(localhost|snails.email)$
+RewriteCond %{REQUEST_URI} !^assets/(.*?)$
 RewriteRule ^favicon.ico$ ./assets/images/favicon.ico [L,NC,QSA]
 RewriteRule ^icon.png$ ./assets/images/icon.png [L,NC,QSA]
 RewriteRule ^url.api$ ./index.php?action=url [L,NC,QSA]
-RewriteRule ^v2/url.api$ ./index.php?action=url [L,NC,QSA]
-RewriteRule ^/(.*?){2,200}$ ./index.php?action=jump&item=$1 [L,NC,QSA]
 
-RewriteEngine On
-RewriteCond %{HTTP_HOST} ^(.*?){2,200}.([a-z0-9]){1,64}.localhost$
-RewriteCond %{HTTP_HOST} ^(.*?){2,200}.([a-z0-9]){1,64}.snails.email$
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_URI} ^/ 
-RewriteRule .* ./index.php?action=jump&subdomain=1 [L,NC,QSA]
 

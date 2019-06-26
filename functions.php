@@ -621,7 +621,7 @@ function jumpShortenURL($url = '')
                         if ($values['last'] + $values['inactive'] < microtime(true))
                                  unset($jumps[$finger]);
         }
- 	$result = $jumps[$hash = md5($url.$referee.microtime(true))] = array("created" => microtime(true), "last" => microtime(true), 'inactive' => (API_DROP_DAYS_INACTIVE * (3600 * 24)), "short" => API_PROTOCOL.API_HOSTNAME.'/'.$referee, "domain" => API_PROTOCOL.$referee.'.'.API_HOSTNAME, 'url' => $url, 'referee' => $referee);
+ 	$result = $jumps[$hash = md5($url.$referee.microtime(true))] = array("created" => microtime(true), "last" => microtime(true), 'inactive' => (API_DROP_DAYS_INACTIVE * (3600 * 24)), "short" => API_PROTOCOL.API_HOSTNAME.'/v2/'.$referee, "domain" => API_PROTOCOL.$referee.'.'.API_HOSTNAME, 'url' => $url, 'referee' => $referee);
         writeRawFile($file, json_encode($jumps));
 	return $result;
 }
