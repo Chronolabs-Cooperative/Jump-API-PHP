@@ -22,43 +22,29 @@
  * @link			https://github.com/Chronolabs-Cooperative/Jump-API-PHP
  */
 
-	$parts = explode(".", microtime(true));
-	mt_srand(mt_rand(-microtime(true), microtime(true))/$parts[1]);
-	mt_srand(mt_rand(-microtime(true), microtime(true))/$parts[1]);
-	mt_srand(mt_rand(-microtime(true), microtime(true))/$parts[1]);
-	mt_srand(mt_rand(-microtime(true), microtime(true))/$parts[1]);
-	$salter = ((float)(mt_rand(0,1)==1?'':'-').$parts[1].'.'.$parts[0]) / sqrt((float)$parts[1].'.'.intval(cosh($parts[0])))*tanh($parts[1]) * mt_rand(1, intval($parts[0] / $parts[1]));
-	header('Context-salting: '. $salter);
-
 	define('MAXIMUM_QUERIES', 56);
-	ini_set('memory_limit', '64M');
+	ini_set('memory_limit', '32M');
 	
 	require_once __DIR__ . DIRECTORY_SEPARATOR . 'apiconfig.php';
 	require_once __DIR__ . DIRECTORY_SEPARATOR . 'functions.php';
 	
-	
 	/**
 	 * URI Path Finding of API URL Source Locality
 	 */
-	$action = $_REQUEST['action'];
-	$source = (isset($_SERVER['HTTPS'])?'https://':'http://').strtolower(basename(__DIR__)).API_URL_BASE_PATH;
-	$item = str_replace(strtolower(basename(__DIR__)), '', $_SERVER['HTTP_HOST']);
-	if (substr($item, strlen($item)-1,1)=='.')
-		$item = substr($item,0,strlen($item)-1);
-	else
-		$item = str_replace(API_URL_BASE_PATH, '', $_SERVER['REQUEST_URI']);
-	if (!empty($item) && $item != '/' && $action != 'url')
-		$action = 'jump';
-	elseif ($action == 'jump' && empty($item))
-		$action = 'default';
-
+	$action = (isset($_REQUEST['action']) && !empty($_REQUEST['action']) ? $_REQUEST['action'] : 'default');
+	if ($action == 'jump' && $_REQUEST['subdomain'] == true) {
+	    $parts = explode(".", $_SERVER['HTTP_HOST']);
+	    $item = $parts[0];
+	} elseif ($action == 'jump' && !empty($_REQUEST['item']))
+        $item = $_REQUEST['item'];
+    
 	http_response_code(200);
 	switch ($action) {
 		default:
   			if (function_exists("http_response_code"))
-                        	http_response_code(400);
-                	apiLoadLanguage('help');
-                	exit;
+                http_response_code(400);
+            return apiLoadLanguage('help');
+        	break;
 		case 'jump':
 			$data = jumpFromShortenURL($item);
 			break;
@@ -74,6 +60,10 @@
 			header('Content-type: text');
 			die($data["short"]);
 			break;
+		case 'php':
+		    header('Content-type: application/php');
+		    die("<?php\n\nreturn " . var_export($data) . ";\n\n?>");
+		    break;
 		case 'json':
 			header('Content-type: application/json');
 			die(json_encode($data));
@@ -85,7 +75,7 @@
 		case 'xml':
 			header('Content-type: application/xml');
 			$dom = new XmlDomConstruct('1.0', 'utf-8');
-			$dom->fromMixed(array(basename(__DIR__)=>$data));
+			$dom->fromMixed(array('root'=>$data));
  			die($dom->saveXML());
 			break;
 	}

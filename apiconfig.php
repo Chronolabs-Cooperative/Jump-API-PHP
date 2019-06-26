@@ -52,7 +52,8 @@ while(mt_rand(-8,4)>=3)
  */
 define("API_DROP_DAYS_INACTIVE", mt_rand(64,198));
 define("API_PROTOCOL", (!isset($_SERVER["HTTPS"])?'http://':'https://'));
-define("API_HOSTNAME", basename(__DIR__));
+define("API_HOSTNAME", strtolower(basename(__DIR__)));
+define("API_URL", API_PROTOCOL . API_HOSTNAME);
 define("API_URL_BASE_PATH", "/");
 define("API_PATH_IO_CACHE", dirname(__DIR__) . DIRECTORY_SEPARATOR . 'data-uris' . DIRECTORY_SEPARATOR . 'cache');
 define("API_PATH_IO_REFEREE", dirname(__DIR__) . DIRECTORY_SEPARATOR . 'data-uris' . DIRECTORY_SEPARATOR . 'referee');

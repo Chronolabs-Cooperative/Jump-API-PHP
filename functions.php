@@ -670,7 +670,7 @@ function jumpFromShortenURL($hash = '')
 
 	// Redirect to ensourced URI
 	header( "HTTP/1.1 301 Moved Permanently" );
-	header("Location: ".API_PROTOCOL . API_HOSTNAME);
+	header("Location: " . API_URL);
 	exit(0);
 }
 

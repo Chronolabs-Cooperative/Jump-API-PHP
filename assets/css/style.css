@@ -1,0 +1,95 @@
+@CHARSET "ISO-8859-1";
+
+body
+{
+	font-family: "Labtop", "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size:85%em;
+	text-align:justify;
+}
+.main {
+	font-family: "Labtop Italic" !important;
+	border:3px solid #000000;
+	border-radius:15px;
+	background-color:#feeebe;
+	padding:39px 39px 39px 39px;
+	margin:64px 64px 64px 64px;
+	-webkit-box-shadow: 7px 7px 10px 0px rgba(108, 80, 99, 0.72);
+	-moz-box-shadow:    7px 7px 10px 0px rgba(108, 80, 99, 0.72);
+	box-shadow:         7px 7px 10px 0px rgba(108, 80, 99, 0.72);
+}
+h1, .headerone {
+	font-family: "Labtop Superwide Boldish" !important;
+	font-weight:bold;
+	font-size:1.42em;
+	background-color:#FFEED9;
+	border-radius:15px;
+	padding:10px 10px 10px 10px;
+	text-shadow: 4px 4px 2px rgba(150, 150, 150, 1);
+}
+h2, .headertwo {
+	font-family: "Labtop Bold" !important;
+	font-weight:500;
+	font-size:1.15em;
+	text-shadow: 4px 4px 2px rgba(150, 150, 150, 1);
+}
+blockquote, .blockquote {
+	margin-left:25px;
+	margin-right:25px;
+	font-family: "Prestige Elite", "Courier New", Courier, monospace !important;
+	margin-bottom:25px;
+	padding: 25px 25px 25px 25px;
+	border:dotted;
+	background-color:#fefefe;
+	-webkit-box-shadow: 7px 7px 10px 0px rgba(108, 80, 99, 0.72);
+	-moz-box-shadow:    7px 7px 10px 0px rgba(108, 80, 99, 0.72);
+	box-shadow:         7px 7px 10px 0px rgba(108, 80, 99, 0.72);
+	-webkit-border-radius: 14px;
+	-moz-border-radius: 14px;
+	border-radius: 14px;
+	text-shadow: 2px 2px 2px rgba(103, 87, 101, 0.82);
+}
+
+.error, #error {
+	color: red;
+	margin:25px;
+	font-family: "LHF Matthews Thin", "Courier New", Courier, monospace !important;
+	font-weight: bold;
+	padding: 25px 25px 25px 25px;
+	border: 5px dotted rgb(128, 230, 110);
+	background-color:#ffeede;
+	-webkit-box-shadow: 7px 7px 10px 0px rgba(108, 80, 99, 0.72);
+	-moz-box-shadow:    7px 7px 10px 0px rgba(108, 80, 99, 0.72);
+	box-shadow:         7px 7px 10px 0px rgba(108, 80, 99, 0.72);
+	-webkit-border-radius: 14px;
+	-moz-border-radius: 14px;
+	border-radius: 14px;
+	text-shadow: 2px -2px -2px rgba(103, 87, 101, 0.82);
+}
+
+form {
+	font-family: 'Life BT Bold', "Trebuchet MS", Arial, Helvetica, sans-serif;
+	padding:17px;
+	border: solid 3px #110022;
+	-webkit-box-shadow: 7px 7px 10px 0px rgba(108, 80, 99, 0.72);
+	-moz-box-shadow:    7px 7px 10px 0px rgba(108, 80, 99, 0.72);
+	box-shadow:         7px 7px 10px 0px rgba(108, 80, 99, 0.72);
+	-webkit-border-radius: 11px;
+	-moz-border-radius: 11px;
+	border-radius: 11px;
+	text-shadow: 2px 2px 2px rgba(103, 87, 101, 0.82);
+	margin-bottom: 16px;
+}
+
+pre, .preblock {
+	font-family: "Prestige Elite Bold", "Courier New", Courier, monospace !important;
+}
+
+p, .paragraph {
+	font-family: "Labtop Thin", "Trebuchet MS", Arial, Helvetica, sans-serif;
+	margin-bottom:12px;
+}
+
+input, button, textarea, radio, select, label
+{
+	font-family: "Life BT Bold Italic" !important;
+}
