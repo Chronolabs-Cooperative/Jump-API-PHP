@@ -107,7 +107,7 @@ global $domain, $protocol, $business, $entity, $contact, $referee, $peerings, $s
     	<ol style="color: rgb(250,10,20); font-family: "Api Code Examples", "Courier New", Courier, monospace !important; text-align: center; font-weight: bold; font-size: 129%;"><li><?php echo implode("<li></li>", $GLOBALS['errors']); ?></li></ol>
     </div>
     <?php } ?>
-    <h1 class="headerone">Jump Short URL API || Chronolabs Cooperative (Sydney, Australia)</h1>
+    <h1 class="headerone">Jump Short URL API | <?php echo API_HOSTNAME; ?> | Chronolabs Cooperative (Sydney, Australia)</h1>
     <p class="paragraph">This is an API Service for creating short URLs from this API!</p>
     <h2 class="headertwo">Code API Documentation</h2>
     <p class="paragraph">You can find the phpDocumentor code API documentation at the following path :: <a target="_blank" href="<?php echo API_URL; ?>/docs/" target="_blank"><?php echo API_URL; ?>/docs/</a>. These should outline the source code core functions and classes for the API to function!</p>
