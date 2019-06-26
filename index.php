@@ -32,10 +32,10 @@
 	 * URI Path Finding of API URL Source Locality
 	 */
 	$action = (isset($_REQUEST['action']) && !empty($_REQUEST['action']) ? $_REQUEST['action'] : 'default');
-	if ($action == 'jump' && $_REQUEST['subdomain'] == true) {
+	if (($action == 'jump' || $action == 'data') && $_REQUEST['subdomain'] == true) {
 	    $parts = explode(".", $_SERVER['HTTP_HOST']);
 	    $item = $parts[0];
-	} elseif ($action == 'jump' && !empty($_REQUEST['item']))
+	} elseif (($action == 'jump' || $action == 'data') && !empty($_REQUEST['item']))
         $item = $_REQUEST['item'];
     
 	http_response_code(200);
@@ -51,7 +51,11 @@
 		case 'url':
 			$data = jumpShortenURL($_REQUEST['url']);
 			break;
+		case 'data':
+		    $data = dataFromShortenURL($item);
+		    break;
 	}
+	
 	$response = (isset($_REQUEST['response'])?$_REQUEST['response']:'raw');
 	// Send Responses
 	switch ($response) 

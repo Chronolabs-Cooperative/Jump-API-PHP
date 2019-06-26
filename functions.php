@@ -621,7 +621,7 @@ function jumpShortenURL($url = '')
                         if ($values['last'] + $values['inactive'] < microtime(true))
                                  unset($jumps[$finger]);
         }
- 	$result = $jumps[$hash = md5($url.$referee.microtime(true))] = array("created" => microtime(true), "last" => microtime(true), 'inactive' => (API_DROP_DAYS_INACTIVE * (3600 * 24)), "short" => API_PROTOCOL.API_HOSTNAME.'/v2/'.$referee, "domain" => API_PROTOCOL.$referee.'.'.API_HOSTNAME, 'url' => $url, 'referee' => $referee);
+        $result = $jumps[$hash = md5($url.$referee.microtime(true))] = array("created" => microtime(true), "last" => microtime(true), 'inactive' => (API_DROP_DAYS_INACTIVE * (3600 * 24)), "short" => API_PROTOCOL.API_HOSTNAME.'/v2/'.$referee, "domain" => API_PROTOCOL.$referee.'.'.API_HOSTNAME, 'url' => $url, 'referee' => $referee, 'timezone' => date_default_timezone_get(), 'data' => array('php' => API_PROTOCOL.API_HOSTNAME.'/php/'.$referee, 'json' => API_PROTOCOL.API_HOSTNAME.'/json/'.$referee, 'serial' => API_PROTOCOL.API_HOSTNAME.'/serial/'.$referee, 'xml' => API_PROTOCOL.API_HOSTNAME.'/xml/'.$referee));
         writeRawFile($file, json_encode($jumps));
 	return $result;
 }
@@ -672,6 +672,36 @@ function jumpFromShortenURL($hash = '')
 	header( "HTTP/1.1 301 Moved Permanently" );
 	header("Location: " . API_URL);
 	exit(0);
+}
+
+/**
+ *
+ * @param unknown_type $url
+ * @return multitype:number unknown |multitype:string number
+ */
+function dataFromShortenURL($hash = '')
+{
+    $hostname = array_reverse(explode('.', $_SERVER['HTTP_HOST']));
+    if (!is_dir(API_PATH_IO_REFEREE))
+        mkdirSecure(API_PATH_IO_REFEREE, 0777);
+    if (!is_file($file = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . basename(__DIR__) . '.json'))
+        $jumps = array();
+    else
+        $jumps = json_decode(file_get_contents($file), true);
+    foreach($jumps as $finger => $values)
+    {
+        if (isset($values['last']) && isset($values['inactive']))
+            if ($values['last'] + $values['inactive'] < microtime(true))
+                unset($jumps[$finger]);
+    }
+    foreach($jumps as $finger => $values)
+    {
+        if (strtolower($values['referee']) == strtolower($hash))
+        {
+            return $values;
+        }
+    }
+    return array();
 }
 
 /**
