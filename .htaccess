@@ -1,17 +1,38 @@
-
+## .htaccess for Jump Short URL API
+## 
+## @link	https://github.com/Chronolabs-Cooperative/Jump-API-PHP
+## @author	Dr. Simon A. Roberts <wishcraft@users.sourceforge.net>
+## @package	jump-api
+## @version	1.2.2
+## 
+## 
 RewriteEngine On
-RewriteCond %{HTTP_HOST} ([a-z0-9]){1,9}.(localhost|snails.email)$
+RewriteCond %{HTTP_HOST} ([a-z0-9]){1,64}.localhost$
+RewriteCond %{HTTP_HOST} ([a-z0-9]){1,64}.snails.email$
+RewriteCond %{REQUEST_URI} ^assets(.*?)$ 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^assets/(css|images|jquery|media)/(.*?).(.*?)			./assets/$1/$2.$3			[L,NC,QSA]
-RewriteRule ^assets/(css|images|jquery|media)/(.*?)/(.*?).(.*?)			./assets/$1/$2/$3.$4			[L,NC,QSA]
-RewriteRule ^assets/(css|images|jquery|media)/(.*?)/(.*?)/(.*?).(.*?)		./assets/$1/$2/$3/$4.$5			[L,NC,QSA]
-RewriteRule ^v2/url.api								./index.php?action=url			[L,NC,QSA]
-RewriteRule ^/(.*?){2,128}							./index.php?action=jump&item=$1		[L,NC,QSA]
+RewriteRule ^/(media|css|jquery|images)/(.*?)/(.*?)/(.*?).(.*?)$ ./assets/$1/$2/$3/$4.$5 [L,NC,QSA]
+RewriteRule ^/(media|css|jquery|images)/(.*?)/(.*?).(.*?)$ ./assets/$1/$2/$3.$4 [L,NC,QSA]
+RewriteRule ^/(media|css|jquery|images)/(.*?).(.*?)$ ./assets/$1/$2.$3 [L,NC,QSA]
 
 RewriteEngine On
-RewriteCond %{HTTP_HOST} ^(.*?){2,128}.([a-z0-9]){1,9}.(localhost|snails.email)$
+RewriteCond %{HTTP_HOST} ([a-z0-9]){1,64}.localhost$
+RewriteCond %{HTTP_HOST} ([a-z0-9]){1,64}.snails.email$
+RewriteCond %{REQUEST_URI} !^assets(.*?)$
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule .*  								./index.php?action=jump&subdomain=1	[L,NC,QSA]
+RewriteRule ^favicon.ico$ ./assets/images/favicon.ico [L,NC,QSA]
+RewriteRule ^icon.png$ ./assets/images/icon.png [L,NC,QSA]
+RewriteRule ^url.api$ ./index.php?action=url [L,NC,QSA]
+RewriteRule ^v2/url.api$ ./index.php?action=url [L,NC,QSA]
+RewriteRule ^/(.*?){2,200}$ ./index.php?action=jump&item=$1 [L,NC,QSA]
+
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ^(.*?){2,200}.([a-z0-9]){1,64}.localhost$
+RewriteCond %{HTTP_HOST} ^(.*?){2,200}.([a-z0-9]){1,64}.snails.email$
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} ^/ 
+RewriteRule .* ./index.php?action=jump&subdomain=1 [L,NC,QSA]
 
