@@ -24,7 +24,31 @@
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'xcp' . DIRECTORY_SEPARATOR . 'class' . DIRECTORY_SEPARATOR . 'xcp.class.php';
 
-
+if (!function_exists('encode_sef'))
+{
+    
+    /**
+     * Xoops safe encoded url elements
+     *
+     * @param unknown $datab
+     * @param string $char
+     * @return string
+     */
+    function encode_sef($datab, $char ='-')
+    {
+        $replacement_chars = array();
+        $rejected = array(" ",".",",","<",">","/","?","'","\"",";",":","{","}","[","]","|","\\","=",
+            "+","_","(",")","*","&","^","%","$","#","@","!","`","~",NULL);
+        $return_data = (str_replace($rejected,$char,$datab));
+        while(substr($return_data, 0, 1) == $char)
+            $return_data = substr($return_data, 1, strlen($return_data)-1);
+        while(substr($return_data, strlen($return_data)-1, 1) == $char)
+            $return_data = substr($return_data, 0, strlen($return_data)-1);
+        while(strpos($return_data, $char . $char))
+            $return_data = str_replace($char . $char, $char, $return_data);
+        return(strtolower($return_data));
+    }
+}
 if (!function_exists("checkDisplayHelp")) {
 
 	/**
@@ -781,7 +805,7 @@ function jumpShortenURL($url = '')
 	else 
 		$jumps = json_decode(file_get_contents($file), true);
 	if (isset($_REQUEST['custom'])&&!empty($_REQUEST['custom']))
-		$referee = trim($_REQUEST['custom']);
+	    $referee = encode_sef(trim($_REQUEST['custom']));
 	else
 		$referee = '';
 	while(testForShortenURL($referee)==true || empty($referee))
@@ -822,7 +846,7 @@ function jumpShortenURL($url = '')
             }
     }
     $result = $jumps[$hash = md5($url.$referee.microtime(true))] = array("created" => microtime(true), "last" => microtime(true), 'inactive' => (API_DROP_DAYS_INACTIVE * (3600 * 24)), "short" => API_PROTOCOL.API_HOSTNAME.'/v2/'.$referee . (isset($_REQUEST['username']) && !empty($_REQUEST['username']) ? '?' . $_REQUEST['username'] :''), "domain" => API_PROTOCOL.$referee.'.'.API_HOSTNAME  . (isset($_REQUEST['username']) && !empty($_REQUEST['username']) ? '/?' . $_REQUEST['username'] :''), 'url' => $url, 'referee' => $referee, 'timezone' => date_default_timezone_get(), 'data' => array('php' => API_PROTOCOL.API_HOSTNAME.'/php/'.$referee, 'json' => API_PROTOCOL.API_HOSTNAME.'/json/'.$referee, 'serial' => API_PROTOCOL.API_HOSTNAME.'/serial/'.$referee, 'xml' => API_PROTOCOL.API_HOSTNAME.'/xml/'.$referee));
-    $emails[$hash] = array('username' => $_REQUEST['username'], 'email' => $_REQUEST['email'], 'callback-hits' => $_REQUEST['callback-hits'], 'callback-stats' => $_REQUEST['callback-stats'], 'callback-reports' => $_REQUEST['callback-reports'], 'callback-expires' => $_REQUEST['callback-expires']);
+    $emails[$hash] = array('create-username' => $_REQUEST['username'], 'email' => $_REQUEST['email'], 'callback-hits' => $_REQUEST['callback-hits'], 'callback-stats' => $_REQUEST['callback-stats'], 'callback-reports' => $_REQUEST['callback-reports'], 'callback-expires' => $_REQUEST['callback-expires']);
     if (constant('API_DEPLOYMENT_CALLING') == true) {
         $calls['create'][$hash][time()] = array_merge(array('ipdata' => $ipdata), $emails[$hash], $jumps[$hash], array('hostname' => parse_url(API_URL, PHP_URL_HOST)));
     }
@@ -875,6 +899,7 @@ function jumpFromShortenURL($hash = '')
 		        unset($emails[$finger]);
 		    }
 	}
+	
 	foreach($jumps as $finger => $values)
 	{
 		if (strtolower($values['referee']) == strtolower($hash))
@@ -886,7 +911,7 @@ function jumpFromShortenURL($hash = '')
 			$jumps[$finger]['last'] = microtime(true);
 			writeRawFile($jumpfile, json_encode($jumps));
 			if (constant('API_DEPLOYMENT_CALLING') == true) {
-			    $calls['hit'][$finger][microtime(true)] = array_merge(array('ipdata' => $ipdata), $emails[$hash], $jumps[$hash], array('hostname' => parse_url(API_URL, PHP_URL_HOST)));
+			    $calls['hit'][$finger][microtime(true)] = array_merge(array('ipdata' => $ipdata, 'deploy-username' => parse_url(API_URL . $_SERVER['REQUEST_URI'], PHP_URL_QUERY)), $emails[$hash], $jumps[$hash], array('hostname' => parse_url(API_URL, PHP_URL_HOST)));
 			}
 			writeRawFile($emailfile, json_encode($emails));
 			if (constant('API_DEPLOYMENT_CALLING') == true) {
