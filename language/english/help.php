@@ -112,7 +112,7 @@ global $domain, $protocol, $business, $entity, $contact, $referee, $peerings, $s
     <h2 class="headertwo">Code API Documentation</h2>
     <p class="paragraph">You can find the phpDocumentor code API documentation at the following path :: <a target="_blank" href="<?php echo API_URL; ?>/docs/" target="_blank"><?php echo API_URL; ?>/docs/</a>. These should outline the source code core functions and classes for the API to function!</p>
     <h2 class="headertwo">API Traffic Statistics</h2>
-    <p class="paragraph">You can find AWStats with the API traffic statistic updated every 20 minutes at the following path :: <a target="_blank" href="<?php echo API_URL; ?>/awstats/awstats.pl" target="_blank"><?php echo API_URL; ?>/awstats/awstats.pl</a>.</p>
+    <p class="paragraph">You can find AWStats with the API traffic statistic updated every 20 minutes at the following path :: <a target="_blank" href="<?php echo API_URL; ?>:1831/awstats/awstats.pl" target="_blank"><?php echo API_URL; ?>:1831/awstats/awstats.pl</a>.</p>
     <h2 class="headertwo">Shorten URL Document Output</h2>
     <p class="paragraph">This is done with the <em>url.api</em> extension at the end of the url.</p>
     <blockquote class="blockquote">
