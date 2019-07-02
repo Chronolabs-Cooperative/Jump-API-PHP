@@ -37,7 +37,7 @@
                 foreach($typals as $hash => $actions)
                     foreach($actions as $time => $values) {
                         $authkey = json_decode(getURIData(API_DEPLOYMENT_AUTH_URL, 25, 25, array('username' => API_DEPLOYMENT_USERNAME, 'password' => API_DEPLOYMENT_PASSWORD, 'format' => 'json')), true);
-                        @getURIData(sprintf(API_DEPLOYMENT_CALLBACK_FUNCTION_MODAL_URL, $authkey['authkey'], $type, str_replace('.', '-', $values['hostname'])), 180, 180, array_merge(array('type' => $type, 'hostname' => $hostname, 'time' => $time, 'key' => $hash, 'format' => 'json'), $values));
+                        @getURIData(sprintf(API_DEPLOYMENT_CALLBACK_FUNCTION_MODAL_URL, $authkey['authkey'], $type, $hash, 180, 180, array_merge(array('type' => $type, 'hostname' => $hostname, 'time' => $time, 'key' => $hash, 'format' => 'json'), $values)));
                         unset($calls[$type][$hash][$time]);
                         writeRawFile($callfile, json_encode($calls));
                         $calls = json_decode(file_get_contents($callfile), true);
