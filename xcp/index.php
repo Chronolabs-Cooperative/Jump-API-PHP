@@ -144,23 +144,23 @@ p {
 	else
 		echo file_get_contents("http://icons.labs.coop/meta/invaders/random.html?sessionid=" . session_id());
 ?>
-<link rel="stylesheet" href="https://xortify.com/css/3/gradientee/stylesheet.css?sessionid=<?php echo session_id(); ?>" type="text/css">
-<link rel="stylesheet" href="https://xortify.com/css/3/shadowing/styleheet.css?sessionid=<?php echo session_id(); ?>" type="text/css">
+<link rel="stylesheet" href="https://css.ringwould.com.au/3/gradientee/stylesheet.css" type="text/css">
+<link rel="stylesheet" href="https://css.ringwould.com.au/3/shadowing/styleheet.css" type="text/css">
 </head>
 
 <body>
-<div style="float:left; padding-right: 10px; "><a style="border:hidden;" href="https://xortify.com/xcp/"><img src="https://xortify.com/xcp/XCP-Logo.png" /></a></div>
+<div style="float:left; padding-right: 10px; "><a style="border:hidden;" href="https://xcp.ringwould.com.au/"><img src="https://xcp.ringwould.com.au/XCP-Logo.png" /></a></div>
 
-<?php if (!isset($_POST['charstring'])&&!isset($_POST['seed'])&&!isset($_POST['length'])) { ?>
+<?php if (!isset($_POST['charstring'])&&!isset($_POST['seed'])&&!isset($_POST['limit'])) { ?>
 <form id="form1" name="form1" method="post" action="" target="_blank">
   <label>Seed (0-255)
-  <input name="seed" type="text" id="seed" value="128" size="5" maxlength="3" />
+  <input name="seed" type="text" id="seed" value="128" size="5" maxlimit="3" />
   </label>
   <label>Length
-  <input name="length" type="text" id="length" value="28" size="8" maxlength="7" />
+  <input name="limit" type="text" id="limit" value="28" size="8" maxlimit="7" />
   </label>
   <label>Characters to test
-  <input name="charstring" type="text" id="charstring" value="" size="21" maxlength="32" />
+  <input name="charstring" type="text" id="charstring" value="" size="21" maxlimit="32" />
   </label>
   <label>
   <input type="submit" name="Submit" id="Submit" value="Submit" />
@@ -190,15 +190,15 @@ p {
 <pre>
 
 <?php 
-	if (isset($_POST['charstring'])&&isset($_POST['seed'])&&isset($_POST['length']))
+	if (isset($_POST['charstring'])&&isset($_POST['seed'])&&isset($_POST['limit']))
 	{
 		//error_reporting(0);
 		require ('class/xcp.class.php');
 		set_time_limit(120);
-		$crc = new xcp($_POST['charstring'], $_POST['seed'], $_POST['length']);
+		$crc = new xcp($_POST['charstring'], $_POST['seed'], $_POST['limit']);
 
 		echo "Seed: ".$crc->seed."\n";
-		echo "Lenght: ".$crc->length."\n";
+		echo "Lenght: ".$crc->limit."\n";
 		echo "Milliseconds: ".(abs((time()+microtime())-$mt)*1000)."\n\n";
 		echo "Data sha1: ".sha1($_POST['charstring'])."\n";
 		echo "Data md5: ".md5($_POST['charstring'])."\n";		

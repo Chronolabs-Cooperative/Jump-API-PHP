@@ -1,26 +1,29 @@
 <?php
-/**
- * Chronolabs REST Short Link URIs API
- *
- * You may not change or alter any portion of this comment or credits
- * of supporting developers from this source code or any supporting source code
- * which is considered copyrighted (c) material of the original comment or credit authors.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * @copyright       Chronolabs Cooperative http://au.syd.labs.coop
- * @license         Academic + GNU GPL 2 (http://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
- * @package         api
- * @since           2.2.1
- * @author          Simon Roberts <wishcraft@users.sourceforge.net>
- * @version         2.2.1
- * @subpackage		shortening-url
- * @description		Short Link URIs API
- * @link			http://internetfounder.wordpress.com
- * @link			http://sourceoforge.net/projects/chronolabsapis/files/jump.labs.coop
- * @link			https://github.com/Chronolabs-Cooperative/Jump-API-PHP
- */
+// $Id: xcp.leaver.php 2.0.0 - xcp 2015-01-13 01:27 wishcraft $
+//  ------------------------------------------------------------------------ //
+//                        Chronolabs Australia                               //
+//                         Copyright (c) 2015                                //
+//                    <[ https://xortify.com/xcp/ ]>                         //
+//  ------------------------------------------------------------------------ //
+//  This program is free software; you can redistribute it and/or modify     //
+//  it under the terms of the SDPL Source Directive Public Licence           //
+//  as published by Chronolabs Australia; either version 2 of the License,   //
+//  (at your option) any later version.                                      //
+//                                                                           //
+//  You may not change or alter any portion of this comment or credits       //
+//  of supporting developers from this source code or any supporting         //
+//  source code which is considered copyrighted (c) material of the          //
+//  original comment or credit authors.                                      //
+//                                                                           //
+//  This program is distributed in the hope that it will be useful,          //
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of           //
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
+//  GNU General Public License for more details.                             //
+//                                                                           //
+//  You should have received a copy of the GNU General Public License        //
+//  along with this program; if not, write to the Chronolab Australia        //
+//  Chronolabs Cooperative:- 10/466 Illawarra Rd, Marrickville, NSW, 2204    //
+//  ------------------------------------------------------------------------ //
 
 if (!class_exists('xcp_leaver'))
 {
@@ -44,18 +47,18 @@ if (!class_exists('xcp_leaver'))
 	{
 		var $crc;
 		
-		function __construct($enum_calc, $base, $len=29)
+		function __construct($enum_calc, $base, $limit=29)
 		{
-			@$this->crc = $this->calc_crc($enum_calc, $base, $len);
+			@$this->crc = $this->calc_crc($enum_calc, $base, $limit);
 		}
 		
-		function calc_crc ($enum_calc, $base, $len)
+		function calc_crc ($enum_calc, $base, $limit)
 		{
-			for ($qi=0; $qi<$len+1; $qi++)
+			for ($qi=0; $qi<$limit+1; $qi++)
 			{
-				$da = floor(9*($qi/$len));
-				$pos = $this->GetPosition($enum_calc, $len, $qi);
-				$pos = ceil($pos / ($len/ ($qi-1)));
+				$da = floor(9*($qi/$limit));
+				$pos = $this->GetPosition($enum_calc, $limit, $qi);
+				$pos = ceil($pos / ($limit/ ($qi-1)));
 				for($v=-$qi;$v<$pos;$v++)
 				{
 					if ($c>64)
@@ -70,33 +73,33 @@ if (!class_exists('xcp_leaver'))
 					$crc .= $base->base[$c];
 				}
 				
-				if ($qi<ceil($len/2))
+				if ($qi<ceil($limit/2))
 				{
-					$crc = $this->nux_cycle($crc, $enum_calc['result'], $len);
-					$crc = $this->nux_cycle($crc, $enum_calc['prince'], $len);
-				} elseif ($qi<ceil(($len/3)*2)) {
-					$crc = $this->nux_cycle($crc, $enum_calc['motivation'], $len);
-					$crc = $this->nux_cycle($crc, $enum_calc['official'], $len);
+					$crc = $this->nux_cycle($crc, $enum_calc['result'], $limit);
+					$crc = $this->nux_cycle($crc, $enum_calc['prince'], $limit);
+				} elseif ($qi<ceil(($limit/3)*2)) {
+					$crc = $this->nux_cycle($crc, $enum_calc['motivation'], $limit);
+					$crc = $this->nux_cycle($crc, $enum_calc['official'], $limit);
 				} else {
-					$crc = $this->nux_cycle($crc, $enum_calc['outsidecause'], $len);															
-					$crc = $this->nux_cycle($crc, $enum_calc['karma'], $len);					
+					$crc = $this->nux_cycle($crc, $enum_calc['outsidecause'], $limit);															
+					$crc = $this->nux_cycle($crc, $enum_calc['karma'], $limit);					
 				}
-				$crc = $this->nux_cycle($crc, $enum_calc['yin'], $len);
+				$crc = $this->nux_cycle($crc, $enum_calc['yin'], $limit);
 			}
 
-			$crc = $this->nux_cycle($crc, $enum_calc['result'], $len);
-			$crc = $this->nux_cycle($crc, $enum_calc['prince'], $len);
-			$crc = $this->nux_cycle($crc, $enum_calc['karma'], $len);
-			$crc = $this->nux_cycle($crc, $enum_calc['motivation'], $len);
-			$crc = $this->nux_cycle($crc, $enum_calc['official'], $len);
-			$crc = $this->nux_cycle($crc, $enum_calc['outsidecause'], $len);															
-			$crc = $this->nux_cycle($crc, $enum_calc['yang'], $len);
+			$crc = $this->nux_cycle($crc, $enum_calc['result'], $limit);
+			$crc = $this->nux_cycle($crc, $enum_calc['prince'], $limit);
+			$crc = $this->nux_cycle($crc, $enum_calc['karma'], $limit);
+			$crc = $this->nux_cycle($crc, $enum_calc['motivation'], $limit);
+			$crc = $this->nux_cycle($crc, $enum_calc['official'], $limit);
+			$crc = $this->nux_cycle($crc, $enum_calc['outsidecause'], $limit);															
+			$crc = $this->nux_cycle($crc, $enum_calc['yang'], $limit);
 			
 			$crc = $this->nux_xor($crc, $enum_calc['nx_key']);			
 			
-			for ($qi=0; $qi<$len+1; $qi++)
+			for ($qi=0; $qi<$limit+1; $qi++)
 			{
-				$da = $len-floor(9*($qi/$len));
+				$da = $limit-floor(9*($qi/$limit));
 				$pos = ceil(ord($crc{$qi}) / 4);
 				for($v=-$qi;$v<$pos;$v++)
 				{
@@ -115,13 +118,13 @@ if (!class_exists('xcp_leaver'))
 			return $final_crc;
 		}
 		
-		private function GetPosition($enum_calc, $len, $qi)
+		private function GetPosition($enum_calc, $limit, $qi)
 		{
 			if ($enum_calc['yin']>$enum_calc['yang'])
 			{
-				$cycle = floor((256*($enum_calc['yin']/$enum_calc['yang']))/(256*($enum_calc['yang']/$enum_calc['yin'])))+($len - $qi);
+				$cycle = floor((256*($enum_calc['yin']/$enum_calc['yang']))/(256*($enum_calc['yang']/$enum_calc['yin'])))+($limit - $qi);
 			} else {
-				$cycle = ceil((256*($enum_calc['yang']/$enum_calc['yin']))/(256*($enum_calc['yin']/$enum_calc['yang'])))+($len - $qi);		
+				$cycle = ceil((256*($enum_calc['yang']/$enum_calc['yin']))/(256*($enum_calc['yin']/$enum_calc['yang'])))+($limit - $qi);		
 			}
 			
 			$result = $this->nuc_step($enum_calc['nuclear'], $enum_calc['result'], $cycle+$qi);
@@ -149,13 +152,13 @@ if (!class_exists('xcp_leaver'))
 			return substr($nuclear,$c,1);
 		}
 		
-		private function nux_cycle($crc, $var, $len)
+		private function nux_cycle($crc, $var, $limit)
 		{
 			for($v=0;$v<($var+1);$v++)
 			{
-				for($y=1;$y<$len;$y++)
+				for($y=1;$y<$limit;$y++)
 				{	
-					$crc = substr($crc, $y, $len - $y).substr($crc, 0, $len-($len - $y));
+					$crc = substr($crc, $y, $limit - $y).substr($crc, 0, $limit-($limit - $y));
 				}
 			}
 			return $crc;

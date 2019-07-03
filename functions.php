@@ -23,6 +23,8 @@
  */
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'xcp' . DIRECTORY_SEPARATOR . 'class' . DIRECTORY_SEPARATOR . 'xcp.class.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'class' . DIRECTORY_SEPARATOR . 'simple_html_dom.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'class' . DIRECTORY_SEPARATOR . 'myip.php';
 
 if (!function_exists('encode_sef'))
 {
@@ -36,8 +38,7 @@ if (!function_exists('encode_sef'))
      */
     function encode_sef($datab, $char ='-')
     {
-        $replacement_chars = array();
-        $rejected = array(" ",".",",","<",">","/","?","'","\"",";",":","{","}","[","]","|","\\","=",
+        $rejected = array("·", " ",".",",","<",">","/","?","'","\"",";",":","{","}","[","]","|","\\","=",
             "+","_","(",")","*","&","^","%","$","#","@","!","`","~",NULL);
         $return_data = (str_replace($rejected,$char,$datab));
         while(substr($return_data, 0, 1) == $char)
@@ -901,97 +902,359 @@ if (!function_exists("getHostByNamel")) {
 
 /**
  * 
+ * @param unknown $value
+ * @param number $limit
+ * @return unknown[]|string[]
+ */
+function extractKeywords($value, $limit = 7) {
+    $keywords = array();
+    $words = explode(" ", encode_sef($value, ' '));
+    foreach($words as $ele => $word)
+        if (strlen($word) > $limit - 1) {
+            if (strtoupper($word) == $word) {
+                $keywords[] = $word;
+                unset($words[$ele]);
+            } else {
+                $keywords[] = ucfirst(strtolower($word));
+                unset($words[$ele]);
+            }
+        } elseif (strlen($word) > 2)
+            if (strtoupper($word) == $word) {
+                $keywords[] = $word;
+                unset($words[$ele]);
+            }
+    return $keywords;
+}
+
+/**
+ * 
+ * @param unknown $values
+ * @return unknown[]
+ */
+function setKeywordHashKeys($values) {
+    $keywords = array();
+    sort($values, SORT_ASC);
+    foreach($values as $value)
+        $keywords[hash('md4', (strtoupper($value)))] = $value;
+    return $keywords;
+}
+
+/**
+ * 
  * @param unknown_type $url
  * @return multitype:number unknown |multitype:string number
  */
 function jumpShortenURL($url = '')
 {	
-	$hostname = array_reverse(explode('.', $_SERVER['HTTP_HOST']));
+
 	if (!is_dir(API_PATH_IO_REFEREE))
 		mkdirSecure(API_PATH_IO_REFEREE, 0777);
-	if (!is_file($file = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . basename(__DIR__) . '.json'))
-		$jumps = array();
-	else 
-		$jumps = json_decode(file_get_contents($file), true);
-	if (isset($_REQUEST['custom'])&&!empty($_REQUEST['custom']))
-	    $referee = encode_sef(trim($_REQUEST['custom']));
-	else
-		$referee = '';
 	
-	while(testForShortenURL($referee)==true || empty($referee))
-	{
-		if (!isset($jumps[md5($url)]))
-		{
-			set_time_limit(120);
-			$crc = new xcp($url, mt_rand(0,254), mt_rand(5,9));
-			$referee = $crc->calc($url);
-		}
-	}
-	
-	$alias = API_ALIAS_ADDRESS_PREFIX . ((strlen(API_ALIAS_ADDRESS_PREFIX) == 0 ? "" : ".")) . $referee . ((strlen(API_ALIAS_ADDRESS_SUFFIX) == 0 ? "" : ".")) . API_ALIAS_ADDRESS_SUFFIX . '@' . API_DEPLOYMENT_EMAILDOMAIN;
-	if (!defined('API_DEPLOYMENT_EMAILDOMAIN') > 0) {
-    	if (!is_dir($pgppath = dirname(__DIR__) . DIRECTORY_SEPARATOR . API_DEPLOYMENT_EMAILDOMAIN . DIRECTORY_SEPARATOR . '.pgp-keys'))
-    	    mkdirSecure($pgppath, 0777, true);
-    	    
-        if (!file_exists($pgppath . DIRECTORY_SEPARATOR . "$alias.diz") && !file_exists($pgppath . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, array_reverse(explode('.', basename(__DIR__)))) . DIRECTORY_SEPARATOR . $alias . ".asc")) {
-            mkdirSecure($ascpath =$pgppath . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, array_reverse(explode('.', basename(__DIR__)))), 0777);
-            
-            mt_srand(mt_rand(-time(), time()), MT_RAND_MT19937);
-            mt_srand(mt_rand(-time(), time()), MT_RAND_MT19937);
-            mt_srand(mt_rand(-time() * time(), time() * time()), MT_RAND_MT19937);
-            mt_srand(mt_rand(-time() * time(), time() * time()), MT_RAND_MT19937);
-            mt_srand(mt_rand(-time() * time() * time(), time() * time() * time()), MT_RAND_MT19937);
-            mt_srand(mt_rand(-time() * time() * time() * time(), time() * time() * time() * time()), MT_RAND_MT19937);
-            
-            writeRawFile($diz = $pgppath . DIRECTORY_SEPARATOR . "$alias.diz", str_replace('%name', $alias, str_replace('%email', "$alias", str_replace('%subbits', mt_rand(API_OPENPGP_MINBITS, API_OPENPGP_MAXBITS), str_replace('%bits', mt_rand(API_OPENPGP_MINBITS, API_OPENPGP_MAXBITS), file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'gen-key-script.diz'))))));
-            
-            exec("gpg --batch --gen-key \"$diz\"", $output, $result);
-            exec("unlink \"$diz\"", $output, $result);
-            exec("gpg --armor --export $alias > \"" . ($pgparmor = $ascpath . DIRECTORY_SEPARATOR . $alias . ".asc") ."\"", $output, $result);
-            foreach(file(__DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'keyservers-hostnames.diz') as $keyserver)
-                exec("gpg --keyserver " . str_replace(array("\n", "\r", "\t"), "", trim($keyserver)) . " --send-key $alias", $output, $result);
-        }
-	}
-	
-	if (!is_file($jumpfile = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . API_HOSTNAME . '.json'))
-        $jumps = array();
+	if (!is_file($jumpsfile = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . API_HOSTNAME . '.json'))
+	    $jumps = array();
     else
-        $jumps = json_decode(file_get_contents($jumpfile), true);
-    
-    if (!is_file($emailfile = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . API_HOSTNAME . '.emails.json'))
+        $jumps = json_decode(file_get_contents($jumpsfile), true);
+	        
+    if (!is_file($emailsfile = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . API_HOSTNAME . '.emails.json'))
         $emails = array();
     else
-        $emails = json_decode(file_get_contents($emailfile), true);
-    
+        $emails = json_decode(file_get_contents($emailsfile), true);
+	                
     if (constant('API_DEPLOYMENT_CALLING') == true) {
-        require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'class' . DIRECTORY_SEPARATOR . 'myip.php';
         $myip = new myip();
         $ipdata = $myip->query('allmyip', 'json');
-        if (!is_file($callfile = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . API_HOSTNAME . '.calling.json'))
+        if (!is_file($callsfile = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . API_HOSTNAME . '.calling.json'))
             $calls = array();
         else
-            $calls = json_decode(file_get_contents($callfile), true);
+            $calls = json_decode(file_get_contents($callsfile), true);
     }
-    foreach($jumps as $finger => $values)
+    
+    if (!is_file($urlsfile = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . basename(__DIR__) . '.urls.json'))
+	    $urls = array();
+    else
+        $urls = json_decode(file_get_contents($urlsfile), true);
+    
+    if (!isset($urls[md5($url)]) || empty($urls[md5($url)]))
     {
-        if (isset($values['last']) && isset($values['inactive']))
+    	if (isset($_REQUEST['custom'])&&!empty($_REQUEST['custom']))
+    	    $urls[md5($url)] = $referee = encode_sef(trim($_REQUEST['custom']));
+    	else
+    		$referee = '';
+	
+    	while(testForShortenURL($referee)==true || empty($referee))
+    	{
+    	    set_time_limit(120);
+            $crc = new xcp($url, mt_rand(0,254), mt_rand(5,9));
+    		$urls[md5($url)] = $referee = $crc->calc($url);
+    	}
+	} else {
+	    $referee = $urls[md5($url)];
+	}
+	writeRawFile($urlsfile, json_encode($urls));
+	
+	$hash = md5($url.$referee.basename(__DIR__));
+	##
+    ## Extract Page Information from: $url
+    ##
+	if (empty($jumps[$hash]['page']) && empty($jumps[$hash]['keywords']))
+	{
+    	$html = file_get_html($url);
+    	
+    	foreach($html->find('link') as $element) {
+    	    if (strpos($element->getAttribute('type'), 'atom') || strpos($element->getAttribute('type'), 'rss') || strpos($element->getAttribute('type'), 'xml'))
+    	    {
+    	        if (!isset($feeds))
+    	            $feeds = array();
+                $hash = md5(parse_url($url, PHP_HOST_URL).$element->getAttribute('href'));
+                $indx = 1;
+                if (strlen($element->getAttribute('title')) > 0) {
+                    if (isset($feeds[$element->getAttribute('title')])) {
+                        $hash = $element->getAttribute('title');
+                        $indx = count($feeds[$hash]) + 1;
+                    } else {
+                        $hash = $element->getAttribute('title');
+                        $indx = 1;
+                    }
+                }
+                $feeds[$hash][$indx]['title'] = $element->getAttribute('title');
+                $feeds[$hash][$indx]['url'] = $element->getAttribute('href');
+                $feeds[$hash][$indx]['mimetype'] = $element->getAttribute('type');
+    	    }
+    	}
+    	
+    	$title = $html->find('title',0);
+    	if (is_object($title)) {
+        	if (strlen($title->innertext) > 0) {
+            	if (!isset($page))
+            	    $page = array();
+        	    $page['title'] = $title->innertext;
+        	    $page['name'] = encode_sef($title->innertext, ' ');
+            }
+    	}
+    	
+    	foreach($html->find('meta') as $element) {
+    	    switch($element->getAttribute('name'))
+    	    {
+    	        case 'description':
+    	            if (!isset($page))
+    	                $page = array();
+                    $page['description'] = $element->getAttribute('content');
+                    break;
+    	        case 'keywords':
+    	            if (!isset($page))
+    	                $page = array();
+                    $page['keywords'] = $element->getAttribute('content');
+                    break;
+    	        case 'twitter:image:src':
+    	            if (!isset($twitter))
+    	                $twitter = array();
+                    $twitter['image'] = $element->getAttribute('content');
+    	            break;
+    	        case 'twitter:site':
+    	            if (!isset($twitter))
+    	                $twitter = array();
+                    $twitter['site'] = $element->getAttribute('content');
+                    break;
+    	        case 'twitter:title':
+    	            if (!isset($twitter))
+    	                $twitter = array();
+                    $twitter['title'] = $element->getAttribute('content');
+                    break;
+    	        case 'twitter:description':
+    	            if (!isset($twitter))
+    	                $twitter = array();
+                    $twitter['description'] = $element->getAttribute('content');
+                    break;
+    	    }
+    	    switch($element->getAttribute('property'))
+    	    {
+    	        case 'og:image':
+    	            if (!isset($page))
+    	                $page = array();
+                    $page['image'] = $element->getAttribute('content');
+                    break;
+    	        case 'og:site_name':
+    	            if (!isset($page))
+    	                $page = array();
+                    $page['site']['name'] = $element->getAttribute('content');
+                    break;
+    	        case 'og:title':
+    	            if (!isset($page))
+    	                $page = array();
+                    $page['site']['title'] = $element->getAttribute('content');
+                    break;
+    	        case 'og:url':
+    	            if (!isset($page))
+    	                $page = array();
+                    $page['site']['url'] = $element->getAttribute('content');
+                    break;
+    	        case 'og:description':
+    	            if (!isset($page))
+    	                $page = array();
+                    $page['site']['description'] = $element->getAttribute('content');
+                    break;
+    	    }
+    	    switch($element->getAttribute('http-equiv'))
+    	    {
+    	        case 'rating':
+    	            if (!isset($page))
+    	                $page = array();
+                    $page['rating'] = $element->getAttribute('content');
+                    break;
+    	        case 'author':
+    	            if (!isset($page))
+    	                $page = array();
+                    $page['author'] = $element->getAttribute('content');
+                    break;
+    	        case 'copyright':
+    	            if (!isset($page))
+    	                $page = array();
+                    $page['copyright'] = $element->getAttribute('content');
+                    break;
+    	        case 'generator':
+    	            if (!isset($page))
+    	                $page = array();
+                    $page['generator'] = $element->getAttribute('content');
+                    break;
+    	        case 'Content-Type':
+    	            if (!isset($page))
+    	                $page = array();
+                    $page['content-type'] = $element->getAttribute('content');
+                    break;
+    	    }
+    	}
+    	
+    	$keywords = array();
+    	if (isset($page)) {
+    	    foreach($page as $key => $value) {
+    	        switch ($key) {
+    	            default:
+    	                $keywords = (array_merge($keywords, extractKeywords($value, strlen('keyword'))));
+    	                break;
+    	            case 'author':
+                    case 'content-type':
+                        break;
+    	            case 'keywords':
+    	                $keywords = (array_merge($keywords, extractKeywords($value, 4)));
+    	                break;
+    	            case 'site': 
+    	                foreach($value as $element => $val) {
+    	                    switch ($element) {
+    	                        default:
+    	                            $keywords = (array_merge($keywords, extractKeywords($val, strlen('keyword'))));
+    	                            break;
+    	                        case 'url':
+    	                            break;
+    	                    }
+    	                }
+    	       }
+    	    }
+    	}
+    	
+        if (isset($twitter)) {
+            foreach($twitter as $key => $value) {
+                switch ($key) {
+                    default:
+                        $keywords = (array_merge($keywords, extractKeywords($value, strlen('keyword'))));
+                        break;
+                    case 'image':
+                        break;
+                }
+            }
+        }
+        array_unique($keywords);
+        foreach($keywords as $ele => $values)
+            if (empty($values))
+                unset($keywords[$ele]);
+            elseif (is_numeric($values))
+                unset($keywords[$ele]);
+            
+    	$parts = explode('.', basename(__DIR__));
+    	$keywords[] = ucfirst(strtolower($parts[0]));
+        $keywords = setKeywordHashKeys($keywords);
+	}
+	
+	if (!defined('API_DEPLOYMENT_EMAILDOMAIN') > 0) {
+	    $alias = API_ALIAS_ADDRESS_PREFIX . ((strlen(API_ALIAS_ADDRESS_PREFIX) == 0 ? "" : ".")) . $referee . ((strlen(API_ALIAS_ADDRESS_SUFFIX) == 0 ? "" : ".")) . API_ALIAS_ADDRESS_SUFFIX . '@' . API_DEPLOYMENT_EMAILDOMAIN;
+    	if (!is_dir($pgppath = dirname(__DIR__) . DIRECTORY_SEPARATOR . API_DEPLOYMENT_EMAILDOMAIN . DIRECTORY_SEPARATOR . '.pgp-keys'))
+    	    mkdirSecure($pgppath, 0777);
+    	    
+        if (!file_exists($pgppath . DIRECTORY_SEPARATOR . "$alias.diz") && !file_exists($pgppath . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, array_reverse(explode('.', basename(__DIR__)))) . DIRECTORY_SEPARATOR . $alias . ".asc")) 
+            mkdirSecure($ascpath =$pgppath . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, array_reverse(explode('.', basename(__DIR__)))), 0777);
+        
+        if (!is_dir($ascpath))
+            mkdir($ascpath, 0777, true);
+            
+        if (!is_dir($pgppath))
+            mkdir($pgppath, 0777, true);
+                
+        mt_srand(mt_rand(-time(), time()), MT_RAND_MT19937);
+        mt_srand(mt_rand(-time(), time()), MT_RAND_MT19937);
+        mt_srand(mt_rand(-time() * time(), time() * time()), MT_RAND_MT19937);
+        mt_srand(mt_rand(-time() * time(), time() * time()), MT_RAND_MT19937);
+        mt_srand(mt_rand(-time() * time() * time(), time() * time() * time()), MT_RAND_MT19937);
+        mt_srand(mt_rand(-time() * time() * time() * time(), time() * time() * time() * time()), MT_RAND_MT19937);
+        
+        writeRawFile($diz = $pgppath . DIRECTORY_SEPARATOR . "$alias.diz", str_replace('%name', (!isset($page['name'])?$alias:$page['name']), str_replace('%email', "$alias", str_replace('%subbits', mt_rand(API_OPENPGP_MINBITS, API_OPENPGP_MAXBITS), str_replace('%bits', mt_rand(API_OPENPGP_MINBITS, API_OPENPGP_MAXBITS), file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'gen-key-script.diz'))))));
+        
+        $sh = array();
+        $sh[] = 'unlink ' . $pgppath . DIRECTORY_SEPARATOR . "$alias.sh";
+        $sh[] = "gpg --batch --gen-key \"$diz\"";
+        $sh[] = "unlink \"$diz\"";
+        $sh[] = "gpg --armor --export $alias > \"" . ($pgparmor = $ascpath . DIRECTORY_SEPARATOR . $alias . ".asc") . "\"";
+        foreach(file(__DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'keyservers-hostnames.diz') as $keyserver)
+            $sh[] = "gpg --keyserver " . str_replace(array("\n", "\r", "\t"), "", trim($keyserver)) . " --send-key $alias";
+        writeRawFile($pgppath . DIRECTORY_SEPARATOR . "$alias.sh", implode("\n", $sh));
+        $start = time();
+        while(!file_exists($pgparmor) && time() < $start + mt_rand(25, 40))
+            sleep(1);
+	} else {
+	    $alias = '';
+	    $pgparmor = '';
+	}
+	
+	foreach($jumps as $finger => $values)
+    {
+        if (isset($values['last']) && isset($values['inactive'])) {
             if ($values['last'] + $values['inactive'] < microtime(true)) {
                 $calls['expire'][$finger][time()] = array_merge(array('ipdata' => $ipdata), $emails[$finger], $jumps[$finger], array('hostname' => parse_url(API_URL, PHP_URL_HOST)));
                 unset($jumps[$finger]);
                 unset($emails[$finger]);
             }
+        }
     }
-    $result = $jumps[$hash = md5($url.$referee.microtime(true))] = array('emails' => count($emailers = mailparse_rfc822_parse_addresses($_REQUEST['emails'])), "alias" => $alias, "pgpkey" => file_get_contents($pgparmor), "created" => microtime(true), "last" => microtime(true), 'inactive' => (API_DROP_DAYS_INACTIVE * (3600 * 24)), "short" => API_ROOT_PROTOCOL.API_HOSTNAME.'/v2/'.$referee . (isset($_REQUEST['username']) && !empty($_REQUEST['username']) ? '?' . $_REQUEST['username'] :''), "domain" => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME  . (isset($_REQUEST['username']) && !empty($_REQUEST['username']) ? '/?' . $_REQUEST['username'] :''), 'url' => $url, 'referee' => $referee, 'timezone' => date_default_timezone_get(), $alias => array('adding' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/adding', 'list' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/list', 'remove' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/remove'), 'data' => array('php' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/php', 'json' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/json', 'serial' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/serial', 'xml' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/xml'));
-    $emails[$hash] = array('create-username' => $_REQUEST['username'], 'alias-pgpkey' => $ascpath, 'alias-emails' => $emailers, 'email' => $_REQUEST['email'], 'callback-hits' => $_REQUEST['callback-hits'], 'callback-stats' => $_REQUEST['callback-stats'], 'callback-reports' => $_REQUEST['callback-reports'], 'callback-expires' => $_REQUEST['callback-expires']);
+    
+    $hash = md5($url.$referee.basename(__DIR__));
+    $emailers = mailparse_rfc822_parse_addresses($_REQUEST['emails']);
+    if (!isset($jumps[$hash]))
+        $jumps[$hash] = array("created" => microtime(true), "last" => microtime(true), 'inactive' => (API_DROP_DAYS_INACTIVE * (3600 * 24)), "short" => API_ROOT_PROTOCOL.API_HOSTNAME.'/v2/'.$referee . (isset($_REQUEST['username']) && !empty($_REQUEST['username']) ? '?' . $_REQUEST['username'] :''), "domain" => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME  . (isset($_REQUEST['username']) && !empty($_REQUEST['username']) ? '/?' . $_REQUEST['username'] :''), 'url' => $url, 'referee' => $referee, 'timezone' => date_default_timezone_get(), 'data' => array('php' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/php', 'json' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/json', 'serial' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/serial', 'xml' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/xml'));
+    if (isset($feeds))
+        $jumps[$hash] = array_merge($jumps[$hash], array('feeds' => $feeds));
+    if (isset($emailers))
+        $jumps[$hash] = array_merge($jumps[$hash], array('emailers' => count($emailers)));
+    if (isset($twitter))
+        $jumps[$hash] = array_merge($jumps[$hash], array('twitter' => $twitter));
+    if (isset($page))
+        $jumps[$hash] = array_merge($jumps[$hash], array('page' => $page));
+    if (isset($keywords))
+        $jumps[$hash] = array_merge($jumps[$hash], array('keywords' => $keywords));
+    if (file_exists($pgparmor))
+        $jumps[$hash] = array_merge($jumps[$hash], array("alias" => $alias, "pgpkey" => file_get_contents($pgparmor), $alias => array('adding' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/adding', 'list' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/list', 'remove' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/remove')));
+    if (!isset($emails[$hash]))
+        $emails[$hash] = array('create-username' => $_REQUEST['username'], 'alias-pgpkey' => $ascpath, 'alias-emails' => $emailers, 'email' => $_REQUEST['email'], 'callback-hits' => $_REQUEST['callback-hits'], 'callback-stats' => $_REQUEST['callback-stats'], 'callback-reports' => $_REQUEST['callback-reports'], 'callback-expires' => $_REQUEST['callback-expires']);
     if (constant('API_DEPLOYMENT_CALLING') == true) {
+        $myip = new myip();
+        $ipdata = $myip->query('allmyip', 'json');
         $calls['create'][$hash][time()] = array_merge(array('ipdata' => $ipdata), $emails[$hash], $jumps[$hash], array('hostname' => parse_url(API_URL, PHP_URL_HOST)));
     }
-    writeRawFile($jumpfile, json_encode($jumps));
-    writeRawFile($emailfile, json_encode($emails));
+    writeRawFile($jumpsfile, json_encode($jumps));
+    writeRawFile($emailsfile, json_encode($emails));
     if (constant('API_DEPLOYMENT_CALLING') == true) {
         writeRawFile($callfile, json_encode($calls));
     }
-	return $result;
+    if (!empty($jumps[$hash]) && is_array($jumps[$hash]))
+        return $jumps[$hash];
+    return array('error' => 'An unknown error has occured!');
 }
 
 
@@ -1017,7 +1280,7 @@ function jumpFromShortenURL($hash = '')
         $emails = json_decode(file_get_contents($emailfile), true);
 	
 	if (constant('API_DEPLOYMENT_CALLING') == true) {
-	    require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'class' . DIRECTORY_SEPARATOR . 'myip.php';
+	    
 	    $myip = new myip();
 	    $ipdata = $myip->query('allmyip', 'json');
 	    if (!is_file($callfile = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . API_HOSTNAME . '.calling.json'))
@@ -1092,7 +1355,7 @@ function dataFromShortenURL($hash = '')
         $emails = json_decode(file_get_contents($emailfile), true);
                     
     if (constant('API_DEPLOYMENT_CALLING') == true) {
-        require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'class' . DIRECTORY_SEPARATOR . 'myip.php';
+        
         $myip = new myip();
         $ipdata = $myip->query('allmyip', 'json');
         if (!is_file($callfile = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . API_HOSTNAME . '.calling.json'))

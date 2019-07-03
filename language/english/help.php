@@ -115,45 +115,94 @@ global $domain, $protocol, $business, $entity, $contact, $referee, $peerings, $s
     <p class="paragraph">You can find AWStats with the API traffic statistic updated every 20 minutes at the following path :: <a target="_blank" href="<?php echo API_URL; ?>:1831/awstats/awstats.pl" target="_blank"><?php echo API_URL; ?>:1831/awstats/awstats.pl</a>.</p>
     <h2 class="headertwo">Shorten URL Document Output</h2>
     <p class="paragraph">This is done with the <em>url.api</em> extension at the end of the url.</p>
-    <blockquote class="blockquote">
-		<form action="<?php echo API_URL; ?>/url.api" method="post">
-			<label for="response-raw">Response formated RAW&nbsp</label><input type="radio" name="response" id="response-raw" value="raw" />
-			<label for="response-php">Response formated PHP&nbsp</label><input type="radio" name="response" id="response-php" value="php" />
-			<label for="response-json">Response formated JSON&nbsp</label><input type="radio" name="response" id="response-json" value="json" checked="checked"/>
-			<label for="response-serial">Response formated PHP Serialisation</label><input type="radio" name="response" id="response-serial" value="serial"/>
-			<label for="response-xml">Response formated XML</label><input type="radio" name="response" id="response-xml" value="xml"/><br/>
-			<label for="url">&nbsp;URL/URI to shorten&nbsp;&nbsp;</label><input type="textbox" name="url" id="url" value="http://" size="36" maxlen="5000"/>
-			<label for="custom">&nbsp;Custom Short Reference Preference&nbsp;&nbsp;</label><input type="textbox" name="custom" id="custom" value="" size="12"/><br/>
-			<label for="username">Username on '<?php echo parse_url(API_DEPLOYMENT_URL, PHP_URL_HOST); ?>'&nbsp;&nbsp;</label><input type="textbox" name="username" id="username" value="" size="24" maxlen="64"/>
-			<label for="email">Your/Telephanist Contact Email&nbsp;&nbsp;</label><input type="textbox" name="email" id="email" value="" size="24" maxlen="200"/>
-			<br/ ><label for="callback-hits">Call Back URL for Hits&nbsp;&nbsp;</label><input type="textbox" name="callback-hits" id="callback-hits" value="" size="44" maxlen="200" />
-			<br/ ><label for="callback-stats">Call Back URL for Statistics&nbsp;&nbsp;</label><input type="textbox" name="callback-stats" id="callback-stats" value="" size="44" maxlen="200" />
-			<br/ ><label for="callback-reports">Call Back URL for Reports&nbsp;&nbsp;</label><input type="textbox" name="callback-reports" id="callback-reports" value="" size="44" maxlen="200" />
-			<br/ ><label for="callback-expires">Call Back URL for Expiry&nbsp;&nbsp;</label><input type="textbox" name="callback-expires" id="callback-expires" value="" size="44" maxlen="200" />
-			<br/ ><input type="submit" id="submit" Value="Shorten URI/URL" />
+    <blockquote class="blockquote" style="height: auto !important;">
+    	<p style="min-width: 100%; clear: both; height: auto !important;">
+		<form action="<?php echo API_URL; ?>/url.api" method="post" style="height: 366px !important;">
+			<div style="min-width: 100%; clear: both;">
+    			<label for="response-raw">Response formated RAW&nbsp</label><input type="radio" name="response" id="response-raw" value="raw" />
+    			<label for="response-php">Response formated PHP&nbsp</label><input type="radio" name="response" id="response-php" value="php" />
+    			<label for="response-json">Response formated JSON&nbsp</label><input type="radio" name="response" id="response-json" value="json" checked="checked"/>
+    			<label for="response-serial">Response formated PHP Serialisation</label><input type="radio" name="response" id="response-serial" value="serial"/>
+    			<label for="response-xml">Response formated XML</label><input type="radio" name="response" id="response-xml" value="xml"/><br/>
+    		</div>
+    		<div style="min-width: 100%; clear: both;">
+    			<div style="float: left; width: auto;">
+        			<label for="url">&nbsp;URL/URI to shorten&nbsp;&nbsp;</label><input type="textbox" name="url" id="url" value="http://" size="36" maxlen="5000"/>
+        			<label for="custom">&nbsp;Custom Short Reference Preference&nbsp;&nbsp;</label><input type="textbox" name="custom" id="custom" value="" size="12"/><br/>
+        		</div>
+        		<div style="float: left; width: auto;">
+        			<label for="username">Username on '<?php echo parse_url(API_DEPLOYMENT_URL, PHP_URL_HOST); ?>'&nbsp;&nbsp;</label><input type="textbox" name="username" id="username" value="" size="24" maxlen="64"/>
+        			<label for="email">Your/Telephanist Contact Email&nbsp;&nbsp;</label><input type="textbox" name="email" id="email" value="" size="24" maxlen="200"/>
+        		</div>
+			</div>
+			<div style="min-width: 100%; clear: both; margin-top: 13px;">
+				<div style="float: left; width: auto; margin-right: 11px;">
+    				<div style="float: left; width: auto; clear: none; margin-right: 7px; padding-top: 22px;">
+    					<div style="width: auto; clear: both; padding: 4px;"><label for="callback-hits">Call Back URL for Hits&nbsp;&nbsp;</label><input style="width: auto; clear: none; padding: 2px;" type="textbox" name="callback-hits" id="callback-hits" value="" maxlen="200" /></div>
+    					<div style="width: auto; clear: both; padding: 4px;"><label for="callback-stats">Call Back URL for Statistics&nbsp;&nbsp;</label><input style="width: auto; clear: none; padding: 2px;" type="textbox" name="callback-stats" id="callback-stats" value="" maxlen="200" /></div>
+    					<div style="width: auto; clear: both; padding: 4px;"><label for="callback-reports">Call Back URL for Reports&nbsp;&nbsp;</label><input style="width: auto; clear: none; padding: 2px;" type="textbox" name="callback-reports" id="callback-reports" value="" maxlen="200" /></div>
+    					<div style="width: auto; clear: both; padding: 4px;"><label for="callback-expires">Call Back URL for Expiry&nbsp;&nbsp;</label><input style="width: auto; clear: none; padding: 2px;" type="textbox" name="callback-expires" id="callback-expires" value="" maxlen="200" /></div>
+    				</div>
+    				<div style="float: left; width: auto;">
+    					<div style='width: auto; padding: 2px;  margin-right: 29px; margin-top: 19px;'>
+        					<div style='word-wrap: break-word !important; font-size: 0.75em !important; margin-right: 11px; clear: both; width: 190px;'>Emails to be included in the alias, you can add/remove addresses later, email address has to be comma seperated in the following format: email@alias.snail.email, "Dr. Who Nobody" &lt;email@alias.snail.email&gt;</div>
+        					<div style='float: left; clear: both; width: auto;'><label for="emails">Email Alias Contacts:<br /><br /></label></div>
+        				</div>
+    				</div>
+    			</div>
+				<div style='float: left; width: auto; margin-left: 9px; margin-top: 19px;'>
+					<textarea name="emails" id="emails" style="height: 100% !important; width: 100% !important;" rows='10' cols='49'></textarea>
+				</div>
+			</div>
+			<div style='width: auto; float: right;'><input type="submit" id="submit" Value="Shorten URI/URL" /></div>
 		</form>
+		</p>
+		
 		Example of Form:-
-		<pre class="preblock">
-	&lt;form action=&quot;<?php echo API_URL; ?>/url.api&quot; method=&quot;post&quot;&gt;
-		&lt;label for=&quot;response-raw&quot;&gt;Response formated RAW&nbsp&lt;/label&gt;&lt;input type=&quot;radio&quot; name=&quot;response&quot; id=&quot;response-raw&quot; value=&quot;raw&quot; /&gt;
-		&lt;label for=&quot;response-php&quot;&gt;Response formated PHP&nbsp&lt;/label&gt;&lt;input type=&quot;radio&quot; name=&quot;response&quot; id=&quot;response-php&quot; value=&quot;php&quot; /&gt;
-		&lt;label for=&quot;response-json&quot;&gt;Response formated JSON&nbsp&lt;/label&gt;&lt;input type=&quot;radio&quot; name=&quot;response&quot; id=&quot;response-json&quot; value=&quot;json&quot; checked=&quot;checked&quot;/&gt;
-		&lt;label for=&quot;response-serial&quot;&gt;Response formated PHP Serialisation&nbsp&lt;/label&gt;&lt;input type=&quot;radio&quot; name=&quot;response&quot; id=&quot;response-serial&quot; value=&quot;serial&quot;/&gt;
-		&lt;label for=&quot;response-xml&quot;&gt;Response formated XML&nbsp&lt;/label&gt;&lt;input type=&quot;radio&quot; name=&quot;response&quot; id=&quot;response-xml&quot; value=&quot;xml&quot;/&gt;&lt;br/&gt;
-		&lt;label for=&quot;url&quot;&gt;&nbsp;URL/URI to shorten&nbsp;&nbsp;&lt;/label&gt;&lt;input type=&quot;textbox&quot; name=&quot;url&quot; id=&quot;url&quot; value=&quot;http://&quot; size=&quot;36&quot; maxlen=&quot;5000&quot;/&gt;
-        &lt;label for=&quot;custom&quot;&gt;&nbsp;Custom Short Reference Preference&nbsp;&nbsp;&lt;/label&gt;&lt;input type=&quot;textbox&quot; name=&quot;custom&quot; id=&quot;custom&quot; value=&quot;&quot; size=&quot;12&quot; maxlen=&quot;128&quot;/&gt;&lt;br/&gt;
-		&lt;label for=&quot;username&quot;&gt;Username on '<?php echo parse_url(API_DEPLOYMENT_URL, PHP_URL_HOST); ?>'&nbsp;&nbsp;&lt;/label&gt;&lt;input type=&quot;textbox&quot; name=&quot;username&quot; id=&quot;username&quot; value=&quot;&quot; size=&quot;24&quot; maxlen=&quot;64&quot;/&gt;
-		&lt;label for=&quot;email&quot;&gt;&nbsp;Your/Telephanist Contact Email&nbsp;&nbsp;&lt;/label&gt;&lt;input type=&quot;textbox&quot; name=&quot;email&quot; id=&quot;email&quot; value=&quot;&quot; size=&quot;24&quot; maxlen=&quot;200&quot;/&gt;
-		&lt;br/ &gt;&lt;label for=&quot;callback-hits&quot;&gt;Call Back URL for Hits&nbsp;&nbsp;&lt;/label&gt;&lt;input type=&quot;textbox&quot; name=&quot;callback-hits&quot; id=&quot;callback-hits&quot; value=&quot;&quot; size=&quot;44&quot; maxlen=&quot;200&quot; /&gt;
-		&lt;br/ &gt;&lt;label for=&quot;callback-stats&quot;&gt;Call Back URL for Statistics&nbsp;&nbsp;&lt;/label&gt;&lt;input type=&quot;textbox&quot; name=&quot;callback-stats&quot; id=&quot;callback-stats&quot; value=&quot;&quot; size=&quot;44&quot; maxlen=&quot;200&quot; /&gt;
-		&lt;br/ &gt;&lt;label for=&quot;callback-reports&quot;&gt;Call Back URL for Reports&nbsp;&nbsp;&lt;/label&gt;&lt;input type=&quot;textbox&quot; name=&quot;callback-reports&quot; id=&quot;callback-reports&quot; value=&quot;&quot; size=&quot;44&quot; maxlen=&quot;200&quot; /&gt;
-		&lt;br/ &gt;&lt;label for=&quot;callback-expires&quot;&gt;Call Back URL for Expiry&nbsp;&nbsp;&lt;/label&gt;&lt;input type=&quot;textbox&quot; name=&quot;callback-expires&quot; id=&quot;callback-expires&quot; value=&quot;&quot; size=&quot;44&quot; maxlen=&quot;200&quot; /&gt;
-		&lt;br/ &gt;&lt;input type&quot;submit&quot; id=&quot;submit&quot; Value=&quot;Shorten URI/URL&quot; /&gt;
-	&lt;/form&gt;
+		<pre class="preblock" style="margin: 14px; padding: 12px; border: 2px solid #ee43a4; background: #feefcb !important; font-weight: 400; overflow: scroll; height: 375px; overflow: scroll; height: 375px;">
+	&lt;form action=&quot;<?php echo API_URL; ?>/url.api&quot; method=&quot;post&quot; style=&quot;height: 366px !important;&quot;&gt;
+			&lt;div style=&quot;min-width: 100%; clear: both;&quot;&gt;
+    			&lt;label for=&quot;response-raw&quot;&gt;Response formated RAW&nbsp&lt;/label&gt;&lt;input type=&quot;radio&quot; name=&quot;response&quot; id=&quot;response-raw&quot; value=&quot;raw&quot; /&gt;
+    			&lt;label for=&quot;response-php&quot;&gt;Response formated PHP&nbsp&lt;/label&gt;&lt;input type=&quot;radio&quot; name=&quot;response&quot; id=&quot;response-php&quot; value=&quot;php&quot; /&gt;
+    			&lt;label for=&quot;response-json&quot;&gt;Response formated JSON&nbsp&lt;/label&gt;&lt;input type=&quot;radio&quot; name=&quot;response&quot; id=&quot;response-json&quot; value=&quot;json&quot; checked=&quot;checked&quot;/&gt;
+    			&lt;label for=&quot;response-serial&quot;&gt;Response formated PHP Serialisation&lt;/label&gt;&lt;input type=&quot;radio&quot; name=&quot;response&quot; id=&quot;response-serial&quot; value=&quot;serial&quot;/&gt;
+    			&lt;label for=&quot;response-xml&quot;&gt;Response formated XML&lt;/label&gt;&lt;input type=&quot;radio&quot; name=&quot;response&quot; id=&quot;response-xml&quot; value=&quot;xml&quot;/&gt;&lt;br/&gt;
+    		&lt;/div&gt;
+    		&lt;div style=&quot;min-width: 100%; clear: both;&quot;&gt;
+    			&lt;div style=&quot;float: left; width: auto;&quot;&gt;
+        			&lt;label for=&quot;url&quot;&gt;&nbsp;URL/URI to shorten&nbsp;&nbsp;&lt;/label&gt;&lt;input type=&quot;textbox&quot; name=&quot;url&quot; id=&quot;url&quot; value=&quot;http://&quot; size=&quot;36&quot; maxlen=&quot;5000&quot;/&gt;
+        			&lt;label for=&quot;custom&quot;&gt;&nbsp;Custom Short Reference Preference&nbsp;&nbsp;&lt;/label&gt;&lt;input type=&quot;textbox&quot; name=&quot;custom&quot; id=&quot;custom&quot; value=&quot;&quot; size=&quot;12&quot;/&gt;&lt;br/&gt;
+        		&lt;/div&gt;
+        		&lt;div style=&quot;float: left; width: auto;&quot;&gt;
+        			&lt;label for=&quot;username&quot;&gt;Username on '<?php echo parse_url(API_DEPLOYMENT_URL, PHP_URL_HOST); ?>'&nbsp;&nbsp;&lt;/label&gt;&lt;input type=&quot;textbox&quot; name=&quot;username&quot; id=&quot;username&quot; value=&quot;&quot; size=&quot;24&quot; maxlen=&quot;64&quot;/&gt;
+        			&lt;label for=&quot;email&quot;&gt;Your/Telephanist Contact Email&nbsp;&nbsp;&lt;/label&gt;&lt;input type=&quot;textbox&quot; name=&quot;email&quot; id=&quot;email&quot; value=&quot;&quot; size=&quot;24&quot; maxlen=&quot;200&quot;/&gt;
+        		&lt;/div&gt;
+			&lt;/div&gt;
+			&lt;div style=&quot;min-width: 100%; clear: both; margin-top: 13px;&quot;&gt;
+				&lt;div style=&quot;float: left; width: auto; margin-right: 11px;&quot;&gt;
+    				&lt;div style=&quot;float: left; width: auto; clear: none; margin-right: 7px; padding-top: 22px;&quot;&gt;
+    					&lt;div style=&quot;width: auto; clear: both; padding: 4px;&quot;&gt;&lt;label for=&quot;callback-hits&quot;&gt;Call Back URL for Hits&nbsp;&nbsp;&lt;/label&gt;&lt;input style=&quot;width: auto; clear: none; padding: 2px;&quot; type=&quot;textbox&quot; name=&quot;callback-hits&quot; id=&quot;callback-hits&quot; value=&quot;&quot; maxlen=&quot;200&quot; /&gt;&lt;/div&gt;
+    					&lt;div style=&quot;width: auto; clear: both; padding: 4px;&quot;&gt;&lt;label for=&quot;callback-stats&quot;&gt;Call Back URL for Statistics&nbsp;&nbsp;&lt;/label&gt;&lt;input style=&quot;width: auto; clear: none; padding: 2px;&quot; type=&quot;textbox&quot; name=&quot;callback-stats&quot; id=&quot;callback-stats&quot; value=&quot;&quot; maxlen=&quot;200&quot; /&gt;&lt;/div&gt;
+    					&lt;div style=&quot;width: auto; clear: both; padding: 4px;&quot;&gt;&lt;label for=&quot;callback-reports&quot;&gt;Call Back URL for Reports&nbsp;&nbsp;&lt;/label&gt;&lt;input style=&quot;width: auto; clear: none; padding: 2px;&quot; type=&quot;textbox&quot; name=&quot;callback-reports&quot; id=&quot;callback-reports&quot; value=&quot;&quot; maxlen=&quot;200&quot; /&gt;&lt;/div&gt;
+    					&lt;div style=&quot;width: auto; clear: both; padding: 4px;&quot;&gt;&lt;label for=&quot;callback-expires&quot;&gt;Call Back URL for Expiry&nbsp;&nbsp;&lt;/label&gt;&lt;input style=&quot;width: auto; clear: none; padding: 2px;&quot; type=&quot;textbox&quot; name=&quot;callback-expires&quot; id=&quot;callback-expires&quot; value=&quot;&quot; maxlen=&quot;200&quot; /&gt;&lt;/div&gt;
+    				&lt;/div&gt;
+    				&lt;div style=&quot;float: left; width: auto;&quot;&gt;
+    					&lt;div style='width: auto; padding: 2px;  margin-right: 29px; margin-top: 19px;'&gt;
+        					&lt;div style='word-wrap: break-word !important; font-size: 0.75em !important; margin-right: 11px; clear: both; width: 190px;'&gt;Emails to be included in the alias, you can add/remove addresses later, email address has to be comma seperated in the following format: email@alias.snail.email, &quot;Dr. Who Nobody&quot; &lt;email@alias.snail.email&gt;&lt;/div&gt;
+        					&lt;div style='float: left; clear: both; width: auto;'&gt;&lt;label for=&quot;emails&quot;&gt;Email Alias Contacts:&lt;br /&gt;&lt;br /&gt;&lt;/label&gt;&lt;/div&gt;
+        				&lt;/div&gt;
+    				&lt;/div&gt;
+    			&lt;/div&gt;
+				&lt;div style='float: left; width: auto; margin-left: 9px; margin-top: 19px;'&gt;
+					&lt;textarea name=&quot;emails&quot; id=&quot;emails&quot; style=&quot;height: 100% !important; width: 100% !important;&quot; rows='10' cols='49'&gt;&lt;/textarea&gt;
+				&lt;/div&gt;
+			&lt;/div&gt;
+			&lt;div style='width: auto; float: right;'&gt;&lt;input type=&quot;submit&quot; id=&quot;submit&quot; Value=&quot;Shorten URI/URL&quot; /&gt;&lt;/div&gt;
+		&lt;/form&gt;
 		</pre>
 		<br/><br/>
 		PHP function required for cURL the form:-
-		<pre class="preblock" style="margin: 14px; padding: 12px; border: 2px solid #ee43a4;">
+		<pre class="preblock" style="margin: 14px; padding: 12px; border: 2px solid #ee43a4; background: #feefcb !important;  overflow: scroll; height: 375px;">
 &lt;?php
 	if (!function_exists("getURIData")) {
 	
@@ -189,7 +238,7 @@ global $domain, $protocol, $business, $entity, $contact, $referee, $peerings, $s
 ?&gt;
 		</pre><br/><br/>
         PHP function in use as per required for cURL:-
-		<pre style="margin: 14px; padding: 12px; border: 2px solid #ee43a4;">
+		<pre style="margin: 14px; padding: 12px; border: 2px solid #ee43a4; background: #feefcb !important;  overflow: scroll; height: 225px;">
 &lt;?php
 	// output the passed array from submission form
 	print_r(json_decode(getURIData("<?php echo API_URL; ?>/url.api", 560, 560, 
