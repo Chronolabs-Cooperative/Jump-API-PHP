@@ -116,7 +116,7 @@ global $domain, $protocol, $business, $entity, $contact, $referee, $peerings, $s
     <h2 class="headertwo">Shorten URL Document Output</h2>
     <p class="paragraph">This is done with the <em>url.api</em> extension at the end of the url.</p>
     <blockquote class="blockquote">
-		<form action="<?php echo API_URL; ?>/v2/url.api" method="post">
+		<form action="<?php echo API_URL; ?>/url.api" method="post">
 			<label for="response-raw">Response formated RAW&nbsp</label><input type="radio" name="response" id="response-raw" value="raw" />
 			<label for="response-php">Response formated PHP&nbsp</label><input type="radio" name="response" id="response-php" value="php" />
 			<label for="response-json">Response formated JSON&nbsp</label><input type="radio" name="response" id="response-json" value="json" checked="checked"/>
@@ -134,7 +134,7 @@ global $domain, $protocol, $business, $entity, $contact, $referee, $peerings, $s
 		</form>
 		Example of Form:-
 		<pre class="preblock">
-	&lt;form action=&quot;<?php echo API_URL; ?>/v2/url.api&quot; method=&quot;post&quot;&gt;
+	&lt;form action=&quot;<?php echo API_URL; ?>/url.api&quot; method=&quot;post&quot;&gt;
 		&lt;label for=&quot;response-raw&quot;&gt;Response formated RAW&nbsp&lt;/label&gt;&lt;input type=&quot;radio&quot; name=&quot;response&quot; id=&quot;response-raw&quot; value=&quot;raw&quot; /&gt;
 		&lt;label for=&quot;response-php&quot;&gt;Response formated PHP&nbsp&lt;/label&gt;&lt;input type=&quot;radio&quot; name=&quot;response&quot; id=&quot;response-php&quot; value=&quot;php&quot; /&gt;
 		&lt;label for=&quot;response-json&quot;&gt;Response formated JSON&nbsp&lt;/label&gt;&lt;input type=&quot;radio&quot; name=&quot;response&quot; id=&quot;response-json&quot; value=&quot;json&quot; checked=&quot;checked&quot;/&gt;

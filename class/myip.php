@@ -25,7 +25,7 @@
  * 
  */
 
-require_once dirname(__DIR__) . DS . 'include' . DS . 'functions.php';
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'functions.php';
 
 /**
  * MyIP REST Service Class Factory
@@ -105,33 +105,28 @@ class myip {
 	 */
 	private function yonkMyIP($format)
 	{
-	    $typal = validateDomain($this->netbios)?'netbios':(validateIPv4($this->netbios)?'ipv4':(validateIPv6($this->netbios)?'ipv6':'unknown'));
-	    $sql = "SELECT * FROM `" . $GLOBALS['APIDB']->prefix('history') . "` WHERE `typal` LIKE '$typal' and `value` LIKE '" . $this->netbios . '"';
-	    $result = $GLOBALS['APIDB']->queryF($sql);
-	    if (!$record = $GLOBALS['APIDB']->fetchArray($result))
+	    foreach(getHostByNamel($this->netbios) as $ipv4)
 	    {
-	        $field = validateIPv4($this->ip)?'ipv4':'ipv6';
-	        $sql = "INSERT INTO `" . $GLOBALS['APIDB']->prefix('history') . "` (`hits`, `typal`, `value`, `$field`, `created`, `queried`) VALUES('1', '$typal', '".$this->netbios."','".$this->ip."', UNIX_TIMESTAMP(), UNIX_TIMESTAMP())";
-	        if (!$GLOBALS['APIDB']->queryF($sql))
-	            die("SQL Failed: $sql");
-	        $record = array('hits' => 1, 'hid' => $GLOBALS['APIDB']->getInsertId());
-	    } else {
-	        $sql = "UPDATE `" . $GLOBALS['APIDB']->prefix('history') . "` `hits` = `hits` + 1, `queried` = UNIX_TIMESTAMP() WHERE `hid` = '". $record['hid'] . "'";
-	        if (!$GLOBALS['APIDB']->queryF($sql))
-	            die("SQL Failed: $sql");
-	        $record['hits']++;
-	    }
-	    switch ($format)
-	    {
-	        case "txt":
-	        case "html":
-	            return array('key' => ($this->key + $record['hid']), 'hits' => $record['hits'], 'ip-address'=>array($this->ip), 'ip-type' => array(validateIPv4($this->ip)?'IPv4':'IPv6'), 'netbios' => array($this->netbios));
-	            break;
-	        default:
-	            return array(($this->key + $record['hid'])=>array('hits' => $record['hits'], 'ip'=>array('address'=>$this->ip, 'type' => validateIPv4($this->ip)?'IPv4':'IPv6'), 'netbios' => $this->netbios));
-	            break;
-	    }
-	    
+		$typal = validateDomain($this->netbios)?'netbios':(validateIPv4($this->netbios)?'ipv4':(validateIPv6($this->netbios)?'ipv6':'unknown'));
+	    	$field = validateIPv4($this->ip)?'ipv4':'ipv6';
+		    if (!$record = readCache("$field-$ipv4-$typal"))
+			{
+			    $record = array('hits' => 1, 'typal' => $typal, 'value' => $this->netbios, $field => $ipv4);
+			} else {
+			    $record['hits']++;
+			}
+			writeCache("$field-$ipv4-$typal", $record, 3600 * 120);
+			switch ($format)
+			{
+			    case "txt":
+			    case "html":
+			        $return[] = array('key' => md5("$field-$ipv4-$typal"), 'hits' => $record['hits'], 'ip-address'=>array($ipv4), 'ip-type' => array(validateIPv4($ipv4)?'IPv4':'IPv6'), 'netbios' => array($this->netbios));
+			        break;
+			    default:
+			        $return[md5("$field-$ipv4-$typal")] = array('hits' => $record['hits'], 'ip'=>array('address'=>$ipv4, 'type' => validateIPv4($ipv4)?'IPv4':'IPv6'), 'netbios' => $this->netbios);
+			        break;
+			}
+		}
 	}
 
 	/**
@@ -176,31 +171,23 @@ class myip {
 	    {
 	        $field = validateIPv4($ipv4)?'ipv4':'ipv6';
 	        $typal = validateDomain($this->netbios)?'netbios':(validateIPv4($this->netbios)?'ipv4':(validateIPv6($this->netbios)?'ipv6':'unknown'));
-    	    $sql = "SELECT * FROM `" . $GLOBALS['APIDB']->prefix('history') . "` WHERE `$field` LIKE '$ipv4' AND `typal` LIKE '$typal' and `value` LIKE '" . $this->netbios . '"';
-    	    $result = $GLOBALS['APIDB']->queryF($sql);
-    	    if (!$record = $GLOBALS['APIDB']->fetchArray($result))
-    	    {
-    	        
-    	        $sql = "INSERT INTO `" . $GLOBALS['APIDB']->prefix('history') . "` (`hits`, `typal`, `value`, `$field`, `created`, `queried`) VALUES('1', '$typal', '".$this->netbios."','".$ipv4."', UNIX_TIMESTAMP(), UNIX_TIMESTAMP())";
-    	        if (!$GLOBALS['APIDB']->queryF($sql))
-    	            die("SQL Failed: $sql");
-	            $record = array('hits' => 1, 'hid' => $GLOBALS['APIDB']->getInsertId());
-    	    } else {
-    	        $sql = "UPDATE `" . $GLOBALS['APIDB']->prefix('history') . "` `hits` = `hits` + 1, `queried` = UNIX_TIMESTAMP() WHERE `hid` = '". $record['hid'] . "'";
-    	        if (!$GLOBALS['APIDB']->queryF($sql))
-    	            die("SQL Failed: $sql");
+  		if (!$record = readCache("$field-$ipv4-$typal"))
+	        {
+	            $record = array('hits' => 1, 'typal' => $typal, 'value' => $this->netbios, $field => $ipv4);
+	        } else {
 	            $record['hits']++;
-    	    }
-    	    switch ($format)
-    	    {
-    	        case "txt":
-    	        case "html":
-    	            $return[] = array('key' => ($this->key + $record['hid']), 'hits' => $record['hits'], 'ip-address'=>array($ipv4), 'ip-type' => array(validateIPv4($ipv4)?'IPv4':'IPv6'), 'netbios' => array($this->netbios));
-    	            break;
-    	        default:
-    	            $return[($this->key + $record['hid'])] = array('hits' => $record['hits'], 'ip'=>array('address'=>$ipv4, 'type' => validateIPv4($ipv4)?'IPv4':'IPv6'), 'netbios' => $this->netbios);
-    	            break;
-    	    }
+	        }
+		writeCache("$field-$ipv4-$typal", $record, 3600 * 120);
+	        switch ($format)
+	        {
+	            case "txt":
+	            case "html":
+	                $return[] = array('key' => md5("$field-$ipv4-$typal"), 'hits' => $record['hits'], 'ip-address'=>array($ipv4), 'ip-type' => array(validateIPv4($ipv4)?'IPv4':'IPv6'), 'netbios' => array($this->netbios));
+	                break;
+	            default:
+	                $return[md5("$field-$ipv4-$typal")] = array('hits' => $record['hits'], 'ip'=>array('address'=>$ipv4, 'type' => validateIPv4($ipv4)?'IPv4':'IPv6'), 'netbios' => $this->netbios);
+	                break;
+	        }
 	    }
 	    return empty($return)?false:$return;
 	}
@@ -218,29 +205,21 @@ class myip {
 	    {
 	        $field = validateIPv6($ipv6)?'ipv6':'ipv4';
 	        $typal = validateDomain($this->netbios)?'netbios':(validateIPv4($this->netbios)?'ipv4':(validateIPv6($this->netbios)?'ipv6':'unknown'));
-	        $sql = "SELECT * FROM `" . $GLOBALS['APIDB']->prefix('history') . "` WHERE `$field` LIKE '$ipv6' AND `typal` LIKE '$typal' and `value` LIKE '" . $this->netbios . '"';
-	        $result = $GLOBALS['APIDB']->queryF($sql);
-	        if (!$record = $GLOBALS['APIDB']->fetchArray($result))
+	        if (!$record = readCache("$field-$ipv6-$typal"))
 	        {
-	            
-	            $sql = "INSERT INTO `" . $GLOBALS['APIDB']->prefix('history') . "` (`hits`, `typal`, `value`, `$field`, `created`, `queried`) VALUES('1', '$typal', '".$this->netbios."','".$ipv6."', UNIX_TIMESTAMP(), UNIX_TIMESTAMP())";
-	            if (!$GLOBALS['APIDB']->queryF($sql))
-	                die("SQL Failed: $sql");
-	            $record = array('hits' => 1, 'hid' => $GLOBALS['APIDB']->getInsertId());
+	            $record = array('hits' => 1, 'typal' => $typal, 'value' => $$this->netbios, $field => $ipv6);
 	        } else {
-	            $sql = "UPDATE `" . $GLOBALS['APIDB']->prefix('history') . "` `hits` = `hits` + 1, `queried` = UNIX_TIMESTAMP() WHERE `hid` = '". $record['hid'] . "'";
-	            if (!$GLOBALS['APIDB']->queryF($sql))
-	                die("SQL Failed: $sql");
 	            $record['hits']++;
 	        }
+		writeCache("$field-$ipv6-$typal", $record, 3600 * 120);
 	        switch ($format)
 	        {
 	            case "txt":
 	            case "html":
-	                $return[] = array('key' => ($this->key + $record['hid']), 'hits' => $record['hits'], 'ip-address'=>array($ipv6), 'ip-type' => array(validateIPv4($ipv6)?'IPv4':'IPv6'), 'netbios' => array($this->netbios));
+	                $return[] = array('key' => md5("$field-$ipv6-$typal"), 'hits' => $record['hits'], 'ip-address'=>array($ipv6), 'ip-type' => array(validateIPv4($ipv6)?'IPv4':'IPv6'), 'netbios' => array($this->netbios));
 	                break;
 	            default:
-	                $return[($this->key + $record['hid'])] = array('hits' => $record['hits'], 'ip'=>array('address'=>$ipv6, 'type' => validateIPv4($ipv6)?'IPv4':'IPv6'), 'netbios' => $this->netbios);
+	                $return[md5("$field-$ipv6-$typal")] = array('hits' => $record['hits'], 'ip'=>array('address'=>$ipv6, 'type' => validateIPv4($ipv6)?'IPv4':'IPv6'), 'netbios' => $this->netbios);
 	                break;
 	        }
 	    }
