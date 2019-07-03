@@ -61,4 +61,5 @@ define("_API_LANGUAGE_DEFAULT", "english");
 
 mkdirSecure(API_PATH_IO_CACHE);
 mkdirSecure(API_PATH_IO_REFEREE);
-?>
+
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'protocols.php';
