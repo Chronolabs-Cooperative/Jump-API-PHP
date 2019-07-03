@@ -37,7 +37,13 @@
 	    $parts = explode(".", $_SERVER['HTTP_HOST']);
 	    $item = $parts[0];
 	} elseif (($action == 'jump' || $action == 'data') && !empty($_REQUEST['item']))
-        $item = $_REQUEST['item'];
+        	$item = $_REQUEST['item'];
+        if (strlen(basename(__DIR__))<strlen($_SERVER['HTTP_HOST'])) {
+	    $parts = explode(".", $_SERVER['HTTP_HOST']);
+	    $item = $parts[0];
+	    if ($action == 'default')
+		$action = 'jump';
+        }
     
 	switch ($action) {
 		default:

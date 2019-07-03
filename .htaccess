@@ -7,22 +7,33 @@
 ## 
 ## 
 
+
 RewriteEngine On
 RewriteCond %{REQUEST_URI} ^(test.api)$
 RewriteRule ^test.api?format=(php|json|serial|xml)$ ./test.php?response=$1&action=test&version=v2 [L,NC,QSA]
 RewriteRule ^test.api$ ./test.php?response=json&action=test&version=v2 [L,NC,QSA]
 
 RewriteEngine On
-RewriteCond %{REQUEST_URI} ^(favicon|icon|url).(ico|png|api)$
+RewriteCond %{HTTP_HOST} ([a-z0-9]){1,64}.(localhost|snails.email)$
+RewriteCond %{REQUEST_URI} ^(favicon|icon|url|index).(ico|png|api|html)$
 RewriteRule ^favicon.ico$ ./assets/images/favicon.ico [L,NC,QSA]
 RewriteRule ^icon.png$ ./assets/images/icon.png [L,NC,QSA]
 RewriteRule ^url.api$ ./index.php?action=url [L,NC,QSA]
+RewriteRule ^index.html$ ./index.php [L,NC,QSA]
+
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ([a-z0-9]){1,64}.(localhost|snails.email)$
+RewriteCond %{REQUEST_URI} ^assets/(media|css|jquery|images)/(.*?)$
+RewriteRule ^/(media|css|jquery|images)/(.*?)/(.*?)/(.*?)$ ./assets/$1/$2/$3/$4 [L,NC,QSA]
+RewriteRule ^/(media|css|jquery|images)/(.*?)/(.*?)$ ./assets/$1/$2/$3 [L,NC,QSA]
+RewriteRule ^/(media|css|jquery|images)/(.*?)$ ./assets/$1/$2 [L,NC,QSA]
 
 RewriteEngine On
 RewriteCond %{HTTP_HOST} ([a-z0-9]){1,64}.(localhost|snails.email)$
 RewriteCond %{REQUEST_URI} ^([a-z0-9]{2})/(.*?)$
 RewriteRule ^([a-z0-9]{2})/url.api$ ./index.php?action=url [L,NC,QSA]
 RewriteRule ^([a-z0-9]{2})/(.*?)$ ./index.php?action=jump&item=$2&version=$1 [L,NC,QSA]
+
 
 RewriteEngine On
 RewriteCond %{REQUEST_URI} ^data/(php|json|serial|xml)$
@@ -32,11 +43,8 @@ RewriteRule ^(data)/(php|json|serial|xml)$ ./index.php?action=$1&response=$2&sub
 
 RewriteEngine On
 RewriteCond %{HTTP_HOST} (.*?).([a-z0-9]){1,64}.(localhost|snails.email)$
+RewriteCond %{REQUEST_URI} ^(index).(html)$
 RewriteRule ^$ ./index.php?action=jump&subdomain=1 [L,NC,QSA]
 
 RewriteEngine On
-RewriteCond %{REQUEST_URI} ^assets/(media|css|jquery|images)/(.*?)$
-RewriteRule ^/(media|css|jquery|images)/(.*?)/(.*?)/(.*?)$ ./assets/$1/$2/$3/$4 [L,NC,QSA]
-RewriteRule ^/(media|css|jquery|images)/(.*?)/(.*?)$ ./assets/$1/$2/$3 [L,NC,QSA]
-RewriteRule ^/(media|css|jquery|images)/(.*?)$ ./assets/$1/$2 [L,NC,QSA]
-
+RewriteRule ^$ http://%{HTTP_HOST}/index.html [L,R=301]
