@@ -23,7 +23,6 @@
  */
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'xcp' . DIRECTORY_SEPARATOR . 'class' . DIRECTORY_SEPARATOR . 'xcp.class.php';
-require_once __DIR__ . DIRECTORY_SEPARATOR . 'class' . DIRECTORY_SEPARATOR . 'myip.php';
 
 if (!function_exists('encode_sef'))
 {
@@ -84,9 +83,9 @@ if (!function_exists("checkFunctionRequirements")) {
 		global $errors;
 		if (file_exists($file = API_PATH_IO_FUNCTIONS . DIRECTORY_SEPARATOR . "$base-$func.diz"))
 		{
-			foreach(file($file) as $fielDIRECTORY_SEPARATOR)
+			foreach(file($file) as $fields)
 			{
-				$parts = explode("||", $fielDIRECTORY_SEPARATOR);
+				$parts = explode("||", $fields);
 				if (isset($parts[2]) && $parts[2] == 'required')
 				{
 					switch ($parts[1])
@@ -175,13 +174,13 @@ if (!function_exists("checkValidField")) {
 					$errors[$field] = sprintf(_API_ERROR_FIELD_NOT_ENUMATOR, $value, "'" . implode("', '", explode("|", $typal)) . "'");
 				break;
 			case "words":
-				if (count($worDIRECTORY_SEPARATOR = explode(" ", $value)))
+				if (count($words = explode(" ", $value)))
 				{
 					if (strpos($typal, "-") != 0)
-						if (count($worDIRECTORY_SEPARATOR)>=$minimal || count($worDIRECTORY_SEPARATOR)<=$maximum )	
-							$errors[$field] =  sprintf(_API_ERROR_FIELD_NOT_WORDIRECTORY_SEPARATOR_RANGE, $maximum, count($worDIRECTORY_SEPARATOR), $minimal,  count($worDIRECTORY_SEPARATOR));
-					elseif(count($worDIRECTORY_SEPARATOR)<=$typal)
-						$errors[$field] =  sprintf(_API_ERROR_FIELD_NOT_WORDIRECTORY_SEPARATOR_LESS, $typal, count($worDIRECTORY_SEPARATOR));
+						if (count($words)>=$minimal || count($words)<=$maximum )	
+							$errors[$field] =  sprintf(_API_ERROR_FIELD_NOT_WORDS_RANGE, $maximum, count($words), $minimal,  count($words));
+					elseif(count($words)<=$typal)
+						$errors[$field] =  sprintf(_API_ERROR_FIELD_NOT_WORDS_LESS, $typal, count($words));
 				}
 				break;
 			case "string":
@@ -227,7 +226,7 @@ if (!function_exists("checkValidField")) {
 if (!function_exists("apiLoadLanguage")) {
 
 	/**
-	 * apiLoadLanguage ~ loaDIRECTORY_SEPARATOR a language files
+	 * apiLoadLanguage ~ loads a language files
 	 * 
 	 * @param unknown_type $definition
 	 * @param unknown_type $language
@@ -274,7 +273,7 @@ if (!function_exists("getURIData")) {
                         else
                             $uploadfile = true;
                             curl_setopt($btt, CURLOPT_POST, true);
-                            curl_setopt($btt, CURLOPT_POSTFIELDIRECTORY_SEPARATOR, http_build_query($post));
+                            curl_setopt($btt, CURLOPT_POSTFIELDS, http_build_query($post));
                             
                             if (!empty($headers))
                                 foreach($headers as $key => $value)
@@ -392,7 +391,7 @@ if (!function_exists("writeCache")) {
 	 *
 	 * @param string $key Identifier for the data
 	 * @param mixed $data Data to be cached
-	 * @param mixed $duration How long to cache the data, in seconDIRECTORY_SEPARATOR
+	 * @param mixed $duration How long to cache the data, in seconds
 	 * @return boolean True if the data was succesfully cached, false on failure
 	 * @access public
 	 */
@@ -675,13 +674,122 @@ if (!function_exists("getNetbios")) {
     }
 }
 
+
+/**
+ * validateMD5()
+ * Validates an MD5 Checksum
+ *
+ * @param string $email
+ * @return boolean
+ */
+
+if (!function_exists("validateMD5")) {
+    function validateMD5($md5) {
+        if(preg_match("/^[a-f0-9]{32}$/i", $md5)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
+/**
+ * validateEmail()
+ * Validates an Email Address
+ *
+ * @param string $email
+ * @return boolean
+ */
+if (!function_exists("validateEmail")) {
+    function validateEmail($email) {
+        if(preg_match("^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.([0-9]{1,3})|([a-zA-Z]{2,3})|(aero|coop|info|mobi|asia|museum|name|edu))$", $email)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
+/**
+ * validateDomain()
+ * Validates a Domain Name
+ *
+ * @param string $domain
+ * @return boolean
+ */
+if (!function_exists("validateDomain")) {
+    function validateDomain($domain) {
+        if(!preg_match("/^([-a-z0-9]{2,100})\.([a-z\.]{2,8})$/i", $domain)) {
+            return false;
+        }
+        return $domain;
+    }
+}
+
+/**
+ * validateIPv4()
+ * Validates and IPv6 Address
+ *
+ * @param string $ip
+ * @return boolean
+ */
+if (!function_exists("validateIPv4")) {
+    function validateIPv4($ip) {
+        if(filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_RES_RANGE) === FALSE) // returns IP is valid
+        {
+            return false;
+        } else {
+            return true;
+        }
+    }
+}
+/**
+ * validateIPv6()
+ * Validates and IPv6 Address
+ *
+ * @param string $ip
+ * @return boolean
+ */
+if (!function_exists("validateIPv6")) {
+    function validateIPv6($ip) {
+        if(filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) === FALSE) // returns IP is valid
+        {
+            return false;
+        } else {
+            return true;
+        }
+    }
+}
+
+if (!function_exists("mailparse_rfc822_parse_addresses")) {
+    function mailparse_rfc822_parse_addresses($str = '')
+    {
+        $emails = array();
+        if(preg_match_all('/\s*"?([^><,"]+)"?\s*((?:<[^><,]+>)?)\s*/', $str, $matches, PREG_SET_ORDER) > 0)
+        {
+            foreach($matches as $m)
+            {
+                if(! empty($m[2]))
+                {
+                    $emails[trim($m[2], '<>')] = $m[1];
+                }
+                else
+                {
+                    $emails[$m[1]] = '';
+                }
+            }
+        }
+        return $emails;
+    }
+}
+
 /**
  * get A + AAAA record for $host
  *
  * if $try_a is true, if AAAA fails, it tries for A the first match found is returned otherwise returns false
  *
  * @param   host    string      netbios networking name\
- * @param   try_a   boolean     try for A Record inclusive of AAAA RecorDIRECTORY_SEPARATOR
+ * @param   try_a   boolean     try for A Record inclusive of AAAA Records
  *
  * return array
  */
@@ -705,7 +813,7 @@ if (!function_exists("getHostByName6")) {
  * if $try_a is true, if AAAA fails, it tries for A the first match found is returned otherwise returns false
  *
  * @param   host    string      netbios networking name
- * @param   try_a   boolean     try for A Record inclusive of AAAA RecorDIRECTORY_SEPARATOR
+ * @param   try_a   boolean     try for A Record inclusive of AAAA Records
  *
  * return array
  */
@@ -809,15 +917,42 @@ function jumpShortenURL($url = '')
 	    $referee = encode_sef(trim($_REQUEST['custom']));
 	else
 		$referee = '';
+	
 	while(testForShortenURL($referee)==true || empty($referee))
 	{
 		if (!isset($jumps[md5($url)]))
 		{
 			set_time_limit(120);
-			$crc = new xcp($url, mt_rand(1,253), mt_rand(4,7));
+			$crc = new xcp($url, mt_rand(0,254), mt_rand(5,9));
 			$referee = $crc->calc($url);
 		}
 	}
+	
+	$alias = API_ALIAS_ADDRESS_PREFIX . ((strlen(API_ALIAS_ADDRESS_PREFIX) == 0 ? "" : ".")) . $referee . ((strlen(API_ALIAS_ADDRESS_SUFFIX) == 0 ? "" : ".")) . API_ALIAS_ADDRESS_SUFFIX . '@' . API_DEPLOYMENT_EMAILDOMAIN;
+	if (!defined('API_DEPLOYMENT_EMAILDOMAIN') > 0) {
+    	if (!is_dir($pgppath = dirname(__DIR__) . DIRECTORY_SEPARATOR . API_DEPLOYMENT_EMAILDOMAIN . DIRECTORY_SEPARATOR . '.pgp-keys'))
+    	    mkdirSecure($pgppath, 0777, true);
+    	    
+        if (!file_exists($pgppath . DIRECTORY_SEPARATOR . "$alias.diz") && !file_exists($pgppath . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, array_reverse(explode('.', basename(__DIR__)))) . DIRECTORY_SEPARATOR . $alias . ".asc")) {
+            mkdirSecure($ascpath =$pgppath . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, array_reverse(explode('.', basename(__DIR__)))), 0777);
+            
+            mt_srand(mt_rand(-time(), time()), MT_RAND_MT19937);
+            mt_srand(mt_rand(-time(), time()), MT_RAND_MT19937);
+            mt_srand(mt_rand(-time() * time(), time() * time()), MT_RAND_MT19937);
+            mt_srand(mt_rand(-time() * time(), time() * time()), MT_RAND_MT19937);
+            mt_srand(mt_rand(-time() * time() * time(), time() * time() * time()), MT_RAND_MT19937);
+            mt_srand(mt_rand(-time() * time() * time() * time(), time() * time() * time() * time()), MT_RAND_MT19937);
+            
+            writeRawFile($diz = $pgppath . DIRECTORY_SEPARATOR . "$alias.diz", str_replace('%name', $alias, str_replace('%email', "$alias", str_replace('%subbits', mt_rand(API_OPENPGP_MINBITS, API_OPENPGP_MAXBITS), str_replace('%bits', mt_rand(API_OPENPGP_MINBITS, API_OPENPGP_MAXBITS), file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'gen-key-script.diz'))))));
+            
+            exec("gpg --batch --gen-key \"$diz\"", $output, $result);
+            exec("unlink \"$diz\"", $output, $result);
+            exec("gpg --armor --export $alias > \"" . ($pgparmor = $ascpath . DIRECTORY_SEPARATOR . $alias . ".asc") ."\"", $output, $result);
+            foreach(file(__DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'keyservers-hostnames.diz') as $keyserver)
+                exec("gpg --keyserver " . str_replace(array("\n", "\r", "\t"), "", trim($keyserver)) . " --send-key $alias", $output, $result);
+        }
+	}
+	
 	if (!is_file($jumpfile = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . API_HOSTNAME . '.json'))
         $jumps = array();
     else
@@ -829,6 +964,7 @@ function jumpShortenURL($url = '')
         $emails = json_decode(file_get_contents($emailfile), true);
     
     if (constant('API_DEPLOYMENT_CALLING') == true) {
+        require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'class' . DIRECTORY_SEPARATOR . 'myip.php';
         $myip = new myip();
         $ipdata = $myip->query('allmyip', 'json');
         if (!is_file($callfile = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . API_HOSTNAME . '.calling.json'))
@@ -845,8 +981,8 @@ function jumpShortenURL($url = '')
                 unset($emails[$finger]);
             }
     }
-    $result = $jumps[$hash = md5($url.$referee.microtime(true))] = array("created" => microtime(true), "last" => microtime(true), 'inactive' => (API_DROP_DAYS_INACTIVE * (3600 * 24)), "short" => API_ROOT_PROTOCOL.API_HOSTNAME.'/v2/'.$referee . (isset($_REQUEST['username']) && !empty($_REQUEST['username']) ? '?' . $_REQUEST['username'] :''), "domain" => API_SUB_PROTOCOL.$referee.'.'.API_HOSTNAME  . (isset($_REQUEST['username']) && !empty($_REQUEST['username']) ? '/?' . $_REQUEST['username'] :''), 'url' => $url, 'referee' => $referee, 'timezone' => date_default_timezone_get(), 'data' => array('php' => API_SUB_PROTOCOL.$referee.'.'.API_HOSTNAME . '/data/php', 'json' => API_SUB_PROTOCOL.$referee.'.'.API_HOSTNAME . '/data/json', 'serial' => API_SUB_PROTOCOL.$referee.'.'.API_HOSTNAME . '/data/serial', 'xml' => API_SUB_PROTOCOL.$referee.'.'.API_HOSTNAME . '/data/xml'));
-    $emails[$hash] = array('create-username' => $_REQUEST['username'], 'email' => $_REQUEST['email'], 'callback-hits' => $_REQUEST['callback-hits'], 'callback-stats' => $_REQUEST['callback-stats'], 'callback-reports' => $_REQUEST['callback-reports'], 'callback-expires' => $_REQUEST['callback-expires']);
+    $result = $jumps[$hash = md5($url.$referee.microtime(true))] = array('emails' => count($emailers = mailparse_rfc822_parse_addresses($_REQUEST['emails'])), "alias" => $alias, "pgpkey" => file_get_contents($pgparmor), "created" => microtime(true), "last" => microtime(true), 'inactive' => (API_DROP_DAYS_INACTIVE * (3600 * 24)), "short" => API_ROOT_PROTOCOL.API_HOSTNAME.'/v2/'.$referee . (isset($_REQUEST['username']) && !empty($_REQUEST['username']) ? '?' . $_REQUEST['username'] :''), "domain" => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME  . (isset($_REQUEST['username']) && !empty($_REQUEST['username']) ? '/?' . $_REQUEST['username'] :''), 'url' => $url, 'referee' => $referee, 'timezone' => date_default_timezone_get(), $alias => array('adding' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/adding', 'list' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/list', 'remove' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/remove'), 'data' => array('php' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/php', 'json' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/json', 'serial' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/serial', 'xml' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/xml'));
+    $emails[$hash] = array('create-username' => $_REQUEST['username'], 'alias-pgpkey' => $ascpath, 'alias-emails' => $emailers, 'email' => $_REQUEST['email'], 'callback-hits' => $_REQUEST['callback-hits'], 'callback-stats' => $_REQUEST['callback-stats'], 'callback-reports' => $_REQUEST['callback-reports'], 'callback-expires' => $_REQUEST['callback-expires']);
     if (constant('API_DEPLOYMENT_CALLING') == true) {
         $calls['create'][$hash][time()] = array_merge(array('ipdata' => $ipdata), $emails[$hash], $jumps[$hash], array('hostname' => parse_url(API_URL, PHP_URL_HOST)));
     }
@@ -881,6 +1017,7 @@ function jumpFromShortenURL($hash = '')
         $emails = json_decode(file_get_contents($emailfile), true);
 	
 	if (constant('API_DEPLOYMENT_CALLING') == true) {
+	    require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'class' . DIRECTORY_SEPARATOR . 'myip.php';
 	    $myip = new myip();
 	    $ipdata = $myip->query('allmyip', 'json');
 	    if (!is_file($callfile = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . API_HOSTNAME . '.calling.json'))
@@ -955,6 +1092,7 @@ function dataFromShortenURL($hash = '')
         $emails = json_decode(file_get_contents($emailfile), true);
                     
     if (constant('API_DEPLOYMENT_CALLING') == true) {
+        require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'class' . DIRECTORY_SEPARATOR . 'myip.php';
         $myip = new myip();
         $ipdata = $myip->query('allmyip', 'json');
         if (!is_file($callfile = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . API_HOSTNAME . '.calling.json'))
@@ -1036,7 +1174,7 @@ if (!class_exists("XmlDomConstruct")) {
 	/**
 	 * class XmlDomConstruct
 	 *
-	 * 	ExtenDIRECTORY_SEPARATOR the DOMDocument to implement personal (utility) methoDIRECTORY_SEPARATOR.
+	 * 	Extends the DOMDocument to implement personal (utility) methods.
 	 *
 	 * @author 		Simon Roberts (Chronolabs) simon@labs.coop
 	 */
@@ -1116,89 +1254,4 @@ if (!class_exists("XmlDomConstruct")) {
 	}
 }
 
-/**
- * validateMD5()
- * Validates an MD5 Checksum
- *
- * @param string $email
- * @return boolean
- */
-
-if (!function_exists("validateMD5")) {
-    function validateMD5($md5) {
-        if(preg_match("/^[a-f0-9]{32}$/i", $md5)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-}
-
-/**
- * validateEmail()
- * Validates an Email Address
- *
- * @param string $email
- * @return boolean
- */
-if (!function_exists("validateEmail")) {
-    function validateEmail($email) {
-        if(preg_match("^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.([0-9]{1,3})|([a-zA-Z]{2,3})|(aero|coop|info|mobi|asia|museum|name|edu))$", $email)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-}
-
-/**
- * validateDomain()
- * Validates a Domain Name
- *
- * @param string $domain
- * @return boolean
- */
-if (!function_exists("validateDomain")) {
-    function validateDomain($domain) {
-        if(!preg_match("/^([-a-z0-9]{2,100})\.([a-z\.]{2,8})$/i", $domain)) {
-            return false;
-        }
-        return $domain;
-    }
-}
-
-/**
- * validateIPv4()
- * Validates and IPv6 Address
- *
- * @param string $ip
- * @return boolean
- */
-if (!function_exists("validateIPv4")) {
-    function validateIPv4($ip) {
-        if(filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_RES_RANGE) === FALSE) // returns IP is valid
-        {
-            return false;
-        } else {
-            return true;
-        }
-    }
-}
-/**
- * validateIPv6()
- * Validates and IPv6 Address
- *
- * @param string $ip
- * @return boolean
- */
-if (!function_exists("validateIPv6")) {
-    function validateIPv6($ip) {
-        if(filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) === FALSE) // returns IP is valid
-        {
-            return false;
-        } else {
-            return true;
-        }
-    }
-}
-
+?>

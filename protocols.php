@@ -22,7 +22,16 @@
  * @link			https://github.com/Chronolabs-Cooperative/Jump-API-PHP
  */
 
-	define('API_ROOT_PROTOCOL', API_PROTOCOL);
-	define('API_SUB_PROTOCOL', API_PROTOCOL);
+/**
+ * 
+ * @var constants
+ */
+define("API_ROOT_PROTOCOL", API_PROTOCOL);
+define("API_SUBS_PROTOCOL", API_PROTOCOL);
 
+define("API_OPENPGP_MINBITS", 1024);
+define("API_OPENPGP_MACBITS", 4096);
 
+$parts = explode('.', basename(__DIR__));
+define("API_ALIAS_ADDRESS_PREFIX", '');
+define("API_ALIAS_ADDRESS_SUFFIX", $parts[0].'.'.$parts[1]);

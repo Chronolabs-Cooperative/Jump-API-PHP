@@ -22,8 +22,8 @@
  * @link			https://github.com/Chronolabs-Cooperative/Jump-API-PHP
  */
 
-error_reporting(0);
-ini_set('display_errors', false);
+error_reporting(E_ERROR);
+ini_set('display_errors', true);
 ini_set('log_errors', false);
 
 
