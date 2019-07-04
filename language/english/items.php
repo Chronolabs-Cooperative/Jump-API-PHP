@@ -30,98 +30,6 @@ for($t=mt_rand(0, 10); $t<mt_rand(22,45); $t++)
 	while(mt_rand(0,45)<= 39)
 		$data .= chr(mt_rand(ord("a"),ord("z")))  . chr(mt_rand(ord("a"),ord("z"))) . chr(mt_rand(ord("A"),ord("Z"))) . chr(mt_rand(ord("a"),ord("z"))) . chr(mt_rand(ord("0"),ord("9"))) . chr(mt_rand(ord("a"),ord("z")))  . chr(mt_rand(ord("a"),ord("z")))  . chr(mt_rand(ord("a"),ord("z")))  . chr(mt_rand(ord("a"),ord("z")))  . chr(mt_rand(ord("a"),ord("z")))  . chr(mt_rand(ord("a"),ord("z")))  . chr(mt_rand(ord("a"),ord("z")))  . chr(mt_rand(ord("a"),ord("z")))  . chr(mt_rand(ord("a"),ord("z")))  . chr(mt_rand(ord("a"),ord("z")))  . chr(mt_rand(ord("a"),ord("z")))  . chr(mt_rand(ord("a"),ord("z")))  . chr(mt_rand(ord("a"),ord("z")))  . chr(mt_rand(ord("a"),ord("z")))  . chr(mt_rand(ord("a"),ord("z")))  . chr(mt_rand(ord("a"),ord("z")))  . chr(mt_rand(ord("a"),ord("z")))  . chr(mt_rand(ord("a"),ord("z")))  . chr(mt_rand(ord("a"),ord("z")))  . chr(mt_rand(ord("a"),ord("z")))  . chr(mt_rand(ord("a"),ord("z")))  . chr(mt_rand(ord("a"),ord("z"))) ;
 
-$scores = $scoreboard = array();
-if (!is_file($hashwordsfile = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . basename(dirname(dirname(__DIR__))) . '.hashwords.json'))
-    $hashwords = array();
-else
-    $hashwords = json_decode(file_get_contents($hashwordsfile), true);
- 
-foreach($hashwords['byhashs'] as $crc => $values) {
-    if (!isset($scores[$values['total']]))
-        $scores[$values['total']] = 1;
-    else {
-        $scores[$values['total']]++;
-    }
-}
-$scores = array_keys($scores);
-sort($scores, SORT_DESC);
-foreach($scores as $total) {
-    foreach($hashwords['byhashs'] as $crc => $values) {
-        if ($values['total'] == $total)
-            $scoreboard[$total][$crc] = $values['word'];
-    }
-    
-}
-
-$tagaverage = 0;
-foreach($scoreboard as $total => $values) {
-    $tagaverage = $tagaverage + count($values) / 2;
-}
-$tagitems=0;
-foreach($scoreboard as $total => $values) {
-    if (count($values) > $tagaverage) {
-        while(count($values) > $tagaverage) {
-            $keys = array_keys($values);
-            shuffle($keys); shuffle($keys); shuffle($keys); shuffle($keys);
-            unset($values[$keys[mt_rand(0, count($keys) - 1)]]);
-        }
-        $tagitems += count($values);
-        $scoreboard[$total] = $values;
-    }
-}
-if ($tagitems > 100) {
-    $totals = array_reverse(array_keys($scoreboard));
-    foreach($totals as $total) {
-        if ($tagitems > 100)
-            continue;
-        foreach($scoreboard[$total] as $values) {
-            $keys = array_keys($values);
-            shuffle($keys); shuffle($keys); shuffle($keys); shuffle($keys);
-            unset($values[$keys[mt_rand(0, count($keys) - 1)]]);
-            $tagitems--;
-            if ($tagitems > 100)
-                continue;
-        }
-        $scoreboard[$total] = $values;
-        if ($tagitems > 100)
-            continue;
-    }
-}
-
-$GLOBALS['keytags'] = array();
-$sum = 0;
-foreach(array_keys($scoreboard) as $total)
-    $sum = $sum + $total;
-
-foreach(array_reverse(array_keys($scoreboard)) as $total) {
-    foreach($scoreboard[$total] as $crc => $term) {
-        $GLOBALS['keytags'][$crc]['url'] = API_URL . "/" . $term . "/keyword.html";
-        $GLOBALS['keytags'][$crc]['keyword'] = $term;
-        $GLOBALS['keytags'][$crc]['font-size'] = floor(((75 * ($total / $sum) + 15) /100) * 41) . 'pt';
-    }
-}
-
-if (count($GLOBALS['keytags']) < 32 || (date("i") >= 0 && date("i") <= 20 && date("H") < 13)) {
-    $GLOBALS['keytags'] = array();
-    foreach(explode("\n", file_get_contents(API_DEPLOYMENT_JUMPAPI_HOSTNAMES)) as $hostname)
-    {
-        $GLOBALS['keytags'][$hostname]['url'] = 'http://' . $hostname;
-        $parts = explode('.', $hostname);
-        if (count($parts) == 5) {
-            unset($parts[2]);
-            unset($parts[3]);
-            unset($parts[4]);
-        } elseif (count($parts) == 4) {
-            unset($parts[2]);
-            unset($parts[3]);
-        } elseif (count($parts) == 3) {
-            unset($parts[2]);
-        }
-        $GLOBALS['keytags'][$hostname]['keyword'] = implode('.', $parts);
-        $GLOBALS['keytags'][$hostname]['font-size'] = mt_rand(2, 10) . 'pt';
-    }
-}
-
 global $domain, $protocol, $business, $entity, $contact, $referee, $peerings, $source;
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -142,7 +50,6 @@ global $domain, $protocol, $business, $entity, $contact, $referee, $peerings, $s
 	<title>Jump Short URL API || Chronolabs Cooperative (Sydney, Australia)</title>
 	<meta property="og:title" content="Jump Short URL API"/>
 	<meta property="og:type" content="jump-api"/>
-	<script type="text/javascript" src="<?php echo API_URL; ?>/assets/js/swfobject.js" ></script>
 	<!-- AddThis Smart Layers BEGIN -->
 	<!-- Go to http://www.addthis.com/get/smart-layers to customize -->
 	<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-50f9a1c208996c1d"></script>
@@ -201,29 +108,6 @@ global $domain, $protocol, $business, $entity, $contact, $referee, $peerings, $s
     </div>
     <?php } ?>
     <h1 class="headerone">Jump Short URL API | <?php echo API_HOSTNAME; ?> | Chronolabs Cooperative (Sydney, Australia)</h1>
-	<?php if (count($GLOBALS['keytags']) > 10) {?>
-    <div style="float: right; width: 500px; height: 500px; clear: none; margin: 27px;">
-    	<div id="tags">
-    		<?php foreach($GLOBALS['keytags'] as $crc => $term) { ?><a href="<?php echo $term['url']; ?>" title="<?php echo $term['keyword']; ?>"><?php echo $term['keyword']; ?></a>
-<?php } ?>
-
-            <script type="text/javascript">
-                var rnumber = Math.floor(Math.random()*9999999);
-                var widget_so = new SWFObject("<?php echo API_URL; ?>/assets/swf/cumulus.swf?r="+rnumber, "cumulusflash", "480", "480", "9", "<?php echo preg_replace('/(#)/ie','','#ffffff'); ?>");
-                widget_so.addParam("wmode", "transparent");
-                widget_so.addParam("allowScriptAccess", "always");
-                widget_so.addVariable("tcolor", "<?php echo "0x".preg_replace('/(#)/ie','','#000000'); ?>");
-                widget_so.addVariable("hicolor", "<?php echo "0x".preg_replace('/(#)/ie','','#003300'); ?>");
-                widget_so.addVariable("tcolor2", "<?php echo "0x".preg_replace('/(#)/ie','','#00ff00'); ?>");
-                widget_so.addVariable("tspeed", "100");
-                widget_so.addVariable("distr", "true");
-                widget_so.addVariable("mode", "tags");
-                widget_so.addVariable("tagcloud", "<?php ob_start();?><tags><?php foreach($GLOBALS['keytags'] as $crc => $term) { ?><a href="<?php echo API_URL; ?>/<?php echo $term['keyword']; ?>/keyword.html" title="<?php echo $term['keyword']; ?>"  style="font-size: <?php echo $term['font-size']; ?>;" ><?php echo $term['keyword']; ?></a><?php } ?></tags><?php echo urlencode(ob_get_clean()); ob_end_clean(); ?>");
-                widget_so.write("tags");
-            </script>
-    	</div>
-	</div>
-	<?php } ?>
     <p class="paragraph">This is an API Service for creating short URLs from this API!</p>
     <h2 class="headertwo">Code API Documentation</h2>
     <p class="paragraph">You can find the phpDocumentor code API documentation at the following path :: <a target="_blank" href="<?php echo API_URL; ?>/docs/" target="_blank"><?php echo API_URL; ?>/docs/</a>. These should outline the source code core functions and classes for the API to function!</p>

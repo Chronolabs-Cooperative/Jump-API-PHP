@@ -13,9 +13,21 @@ RewriteCond %{REQUEST_URI} ^(test.api)$
 RewriteRule ^test.api?format=(php|json|serial|xml)$ ./test.php?response=$1&action=test&version=v2 [L,NC,QSA]
 RewriteRule ^test.api$ ./test.php?response=json&action=test&version=v2 [L,NC,QSA]
 
+
 RewriteEngine On
 RewriteCond %{HTTP_HOST} ([a-z0-9]){1,64}.(localhost|snails.email)$
-RewriteCond %{REQUEST_URI} ^(favicon|icon|url|index).(ico|png|api|html)$
+RewriteCond %{REQUEST_URI} ^(items|item|keywords|keyword).(html)$
+RewriteRule ^([0-9]+)/([0-9]+)/(.*?)/(asc|desc)/items.html$ ./items.php?start=$1&limit=$2&sort=$3&direction=$4&mode=items [L,NC,QSA]
+RewriteRule ^([0-9]+)/([0-9]+)/(.*?)/([0-9a-zA-Z]+)/item.html$ ./items.php?year=$1&week=$2&title=$3&referee=$4&mode=item [L,NC,QSA]
+RewriteRule ^([0-9a-zA-Z]+)/item.html$ ./items.php?hash=$1&mode=item [L,NC,QSA]
+RewriteRule ^items.html$ ./items.php?start=1&limit=30&sort=last&direction=desc&mode=items [L,NC,QSA]
+RewriteRule ^(.*?)/keyword.html$ ./keyword.php?token=$1&mode=keyword [L,NC,QSA]
+RewriteRule ^keywords.html$ ./keywords.php?start=1&limit=30&sort=count&direction=desc&mode=keywords [L,NC,QSA]
+
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ([a-z0-9]){1,64}.(localhost|snails.email)$
+RewriteCond %{REQUEST_URI} ^(favicon|icon|url|index|jimage|jicon).(ico|png|jpg|gif|api|html)$
+RewriteRule ^([0-9a-zA-Z]+)/j(image|icon).(png|jpg|gif)$ ./images.$2.php?hash=$1&format=$3 [L,NC,QSA]
 RewriteRule ^favicon.ico$ ./assets/images/favicon.ico [L,NC,QSA]
 RewriteRule ^icon.png$ ./assets/images/icon.png [L,NC,QSA]
 RewriteRule ^url.api$ ./index.php?action=url [L,NC,QSA]
@@ -23,10 +35,10 @@ RewriteRule ^index.html$ ./index.php [L,NC,QSA]
 
 RewriteEngine On
 RewriteCond %{HTTP_HOST} ([a-z0-9]){1,64}.(localhost|snails.email)$
-RewriteCond %{REQUEST_URI} ^assets/(media|css|jquery|images)/(.*?)$
-RewriteRule ^/(media|css|jquery|images)/(.*?)/(.*?)/(.*?)$ ./assets/$1/$2/$3/$4 [L,NC,QSA]
-RewriteRule ^/(media|css|jquery|images)/(.*?)/(.*?)$ ./assets/$1/$2/$3 [L,NC,QSA]
-RewriteRule ^/(media|css|jquery|images)/(.*?)$ ./assets/$1/$2 [L,NC,QSA]
+RewriteCond %{REQUEST_URI} ^assets/(media|css|jquery|images|swf|js)/(.*?)$
+RewriteRule ^/(media|css|jquery|images|swf|js)/(.*?)/(.*?)/(.*?)$ ./assets/$1/$2/$3/$4 [L,NC,QSA]
+RewriteRule ^/(media|css|jquery|images|swf|js)/(.*?)/(.*?)$ ./assets/$1/$2/$3 [L,NC,QSA]
+RewriteRule ^/(media|css|jquery|images|swf|js)/(.*?)$ ./assets/$1/$2 [L,NC,QSA]
 
 RewriteEngine On
 RewriteCond %{HTTP_HOST} ([a-z0-9]){1,64}.(localhost|snails.email)$

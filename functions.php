@@ -974,10 +974,15 @@ function jumpShortenURL($url = '')
     else
         $urls = json_decode(file_get_contents($urlsfile), true);
     
-    if (!isset($urls[md5($url)]) || empty($urls[md5($url)]))
+    if (!is_file($hashwordsfile = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . basename(__DIR__) . '.hashwords.json'))
+        $hashwords = array();
+    else
+        $hashwords = json_decode(file_get_contents($hashwordsfile), true);
+        
+    if (!isset($urls[hash('md4', $url)]) || empty($urls[hash('md4', $url)]))
     {
     	if (isset($_REQUEST['custom'])&&!empty($_REQUEST['custom']))
-    	    $urls[md5($url)] = $referee = encode_sef(trim($_REQUEST['custom']));
+    	    $urls[hash('md4', $url)] = $referee = encode_sef(trim($_REQUEST['custom']));
     	else
     		$referee = '';
 	
@@ -985,14 +990,25 @@ function jumpShortenURL($url = '')
     	{
     	    set_time_limit(120);
             $crc = new xcp($url, mt_rand(0,254), mt_rand(5,9));
-    		$urls[md5($url)] = $referee = $crc->calc($url);
+            $urls[hash('md4', $url)] = $referee = $crc->calc($url);
     	}
 	} else {
-	    $referee = $urls[md5($url)];
+	    $referee = $urls[hash('md4', $url)];
 	}
-	writeRawFile($urlsfile, json_encode($urls));
 	
-	$hash = md5($url.$referee.basename(__DIR__));
+	if (!is_file($refereesfile = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . basename(__DIR__) . '.referees.json'))
+	    $referees = array();
+    else
+        $referees = json_decode(file_get_contents($refereesfile), true);
+	        
+	if (!is_file($hashsfile = API_PATH_IO_REFEREE  . DIRECTORY_SEPARATOR . basename(__DIR__) . '.hashs.json'))
+	    $hashs = array();
+    else
+        $hashs = json_decode(file_get_contents($hashsfile), true);
+	        
+    $hashs[$hash = hash('md4', $url.$referee.basename(__DIR__))] = $referee;
+    $referees[$referee] = $hash;
+    
 	##
     ## Extract Page Information from: $url
     ##
@@ -1018,7 +1034,16 @@ function jumpShortenURL($url = '')
                 }
                 $feeds[$hash][$indx]['title'] = $element->getAttribute('title');
                 $feeds[$hash][$indx]['url'] = $element->getAttribute('href');
+                if (substr($feeds[$hash][$indx]['url'], 0, 1) == '/')
+                    $feeds[$hash][$indx]['url'] = parse_url($url,PHP_SCHEME_URL) . '://' . parse_url($url,PHP_HOST_URL) . $feeds[$hash][$indx]['url'];
                 $feeds[$hash][$indx]['mimetype'] = $element->getAttribute('type');
+    	    } elseif (in_array($element->getAttribute('rel'), array('icon', 'shortcut icon'))) {
+    	        if (!isset($page))
+    	            $page = array();
+	            $page['icon'][$element->getAttribute('rel')]['mimetype'] = $element->getAttribute('type');
+	            $page['icon'][$element->getAttribute('rel')]['url'] = $element->getAttribute('href');
+	            if (substr($page['icon'][$element->getAttribute('rel')]['url'], 0, 1) == '/')
+	                $page['icon'][$element->getAttribute('rel')]['url'] = parse_url($url,PHP_SCHEME_URL) . '://' . parse_url($url,PHP_HOST_URL) . $page['icon'][$element->getAttribute('rel')]['url'];
     	    }
     	}
     	
@@ -1129,13 +1154,13 @@ function jumpShortenURL($url = '')
     	    foreach($page as $key => $value) {
     	        switch ($key) {
     	            default:
-    	                $keywords = (array_merge($keywords, extractKeywords($value, strlen('keyword'))));
+    	                $keywords = (array_merge($keywords, extractKeywords($value, 4)));
     	                break;
     	            case 'author':
                     case 'content-type':
                         break;
     	            case 'keywords':
-    	                $keywords = (array_merge($keywords, extractKeywords($value, 4)));
+    	                $keywords = (array_merge($keywords, extractKeywords($value, 3)));
     	                break;
     	            case 'site': 
     	                foreach($value as $element => $val) {
@@ -1155,7 +1180,7 @@ function jumpShortenURL($url = '')
             foreach($twitter as $key => $value) {
                 switch ($key) {
                     default:
-                        $keywords = (array_merge($keywords, extractKeywords($value, strlen('keyword'))));
+                        $keywords = (array_merge($keywords, extractKeywords($value, 4)));
                         break;
                     case 'image':
                         break;
@@ -1172,6 +1197,50 @@ function jumpShortenURL($url = '')
     	$parts = explode('.', basename(__DIR__));
     	$keywords[] = ucfirst(strtolower($parts[0]));
         $keywords = setKeywordHashKeys($keywords);
+        
+        foreach($keywords as $crc => $keyword) {
+            $hashwords['bywords'][$keyword] = $crc;
+            if (!isset($hashwords['byhashs'][$crc]['total']))
+                $hashwords['byhashs'][$crc]['total']=1;
+            else {
+                $hashwords['byhashs'][$crc]['total']++;
+            }
+            if (!isset($hashwords['byhashs'][$crc]['hits']))
+                $hashwords['byhashs'][$crc]['hits']=0;
+            if (!isset($hashwords['byhashs'][$crc]['expired'])) {
+                $hashwords['byhashs'][$crc]['expired']['when']=0;
+                $hashwords['byhashs'][$crc]['expired']['hash']='';
+            }
+            $hashwords['byhashs'][$crc]['clicked']['when']=time();
+            $hashwords['byhashs'][$crc]['clicked']['hash']=$hash;
+            if (!isset($hashwords['byhashs'][$crc]['clicked'])) {
+                $hashwords['byhashs'][$crc]['clicked']['when']=0;
+                $hashwords['byhashs'][$crc]['clicked']['hash']='';
+            }
+            if (!isset($hashwords['byhashs'][$crc]['last'])) {
+                $hashwords['byhashs'][$crc]['last']['when']=0;
+                $hashwords['byhashs'][$crc]['last']['hash']='';
+            }
+            if (!isset($hashwords['byhashs'][$crc]['previous'])) {
+                $hashwords['byhashs'][$crc]['previous']['when']=0;
+                $hashwords['byhashs'][$crc]['previous']['hash']='';
+            }
+            if (!isset($hashwords['byhashs'][$crc]['emailers'])) {
+                $hashwords['byhashs'][$crc]['emailers']['when']=0;
+                $hashwords['byhashs'][$crc]['emailers']['hash']='';
+            }
+            if (!isset($hashwords['byhashs'][$crc]['data'])) {
+                $hashwords['byhashs'][$crc]['data']['when']=0;
+                $hashwords['byhashs'][$crc]['data']['hash']='';
+            }
+            $hashwords['byhashs'][$crc]['word']=$keyword;
+            $hashwords['byhashs'][$crc]['jump']['active'][$hash] = $referee;
+            if (!isset($hashwords['byhashs'][$crc]['jump']['expire']))
+                $hashwords['byhashs'][$crc]['jump']['expire'] = array();
+            $hashwords['byhashs'][$crc]['referee']['active'][$referee] = $hash;
+            if (!isset($hashwords['byhashs'][$crc]['referee']['expire']))
+                $hashwords['byhashs'][$crc]['referee']['expire'] = array();
+        }
 	}
 	
 	if (!defined('API_DEPLOYMENT_EMAILDOMAIN') > 0) {
@@ -1217,15 +1286,31 @@ function jumpShortenURL($url = '')
     {
         if (isset($values['last']) && isset($values['inactive'])) {
             if ($values['last'] + $values['inactive'] < microtime(true)) {
-                $calls['expire'][$finger][time()] = array_merge(array('ipdata' => $ipdata), $emails[$finger], $jumps[$finger], array('hostname' => parse_url(API_URL, PHP_URL_HOST)));
+                $calls['expire'][$finger][time()] = array_merge(array('expired' => time()), $emails[$finger], $jumps[$finger], array('hostname' => parse_url(API_URL, PHP_URL_HOST)));
+                foreach($urlsfile as $id => $refea)
+                    if ($jumps[$finger]['referee'] == $refea)
+                        unset($urlsfile[$id]);
                 unset($jumps[$finger]);
                 unset($emails[$finger]);
+                foreach($hashwords['byhashs'] as $crc => $values) {
+                    if(in_array($finger, $values['jump']['active'])) {
+                        $hashwords['byhashs'][$crc]['jump']['expire'][$finger] = $values['jump']['active'][$finger];
+                        unset($hashwords['byhashs'][$crc]['jump']['active'][$finger]);
+                    }
+                    if(in_array($hashs[$finger], $values['referee']['active'])) {
+                        $hashwords['byhashs'][$crc]['referee']['expire'][$hashs[$finger]] = $values['referee']['active'][$hashs[$finger]];
+                        unset($hashwords['byhashs'][$crc]['referee']['active'][$hashs[$finger]]);
+                    }
+                }
+                unset($referees[$hashs[$finger]]);
+                unset($hashs[$finger]);
             }
         }
     }
     
-    $hash = md5($url.$referee.basename(__DIR__));
-    $emailers = mailparse_rfc822_parse_addresses($_REQUEST['emails']);
+    $hash = hash('md4', $url.$referee.basename(__DIR__));
+    if (isset($_REQUEST['emails']) && !empty($_REQUEST['emails']))
+        $emailers = mailparse_rfc822_parse_addresses($_REQUEST['emails']);
     if (!isset($jumps[$hash]))
         $jumps[$hash] = array("created" => microtime(true), "last" => microtime(true), 'inactive' => (API_DROP_DAYS_INACTIVE * (3600 * 24)), "short" => API_ROOT_PROTOCOL.API_HOSTNAME.'/v2/'.$referee . (isset($_REQUEST['username']) && !empty($_REQUEST['username']) ? '?' . $_REQUEST['username'] :''), "domain" => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME  . (isset($_REQUEST['username']) && !empty($_REQUEST['username']) ? '/?' . $_REQUEST['username'] :''), 'url' => $url, 'referee' => $referee, 'timezone' => date_default_timezone_get(), 'data' => array('php' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/php', 'json' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/json', 'serial' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/serial', 'xml' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/xml'));
     if (isset($feeds))
@@ -1241,16 +1326,18 @@ function jumpShortenURL($url = '')
     if (file_exists($pgparmor))
         $jumps[$hash] = array_merge($jumps[$hash], array("alias" => $alias, "pgpkey" => file_get_contents($pgparmor), $alias => array('adding' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/adding', 'list' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/list', 'remove' => API_SUBS_PROTOCOL.$referee.'.'.API_HOSTNAME.'/remove')));
     if (!isset($emails[$hash]))
-        $emails[$hash] = array('create-username' => $_REQUEST['username'], 'alias-pgpkey' => $ascpath, 'alias-emails' => $emailers, 'email' => $_REQUEST['email'], 'callback-hits' => $_REQUEST['callback-hits'], 'callback-stats' => $_REQUEST['callback-stats'], 'callback-reports' => $_REQUEST['callback-reports'], 'callback-expires' => $_REQUEST['callback-expires']);
+        $emails[$hash] = array('deploy-username' => $_REQUEST['username'], 'alias-pgpkey' => $ascpath, 'alias-emails' => $emailers, 'email' => $_REQUEST['email'], 'callback-hits' => $_REQUEST['callback-hits'], 'callback-stats' => $_REQUEST['callback-stats'], 'callback-reports' => $_REQUEST['callback-reports'], 'callback-expires' => $_REQUEST['callback-expires']);
     if (constant('API_DEPLOYMENT_CALLING') == true) {
-        $myip = new myip();
-        $ipdata = $myip->query('allmyip', 'json');
         $calls['create'][$hash][time()] = array_merge(array('ipdata' => $ipdata), $emails[$hash], $jumps[$hash], array('hostname' => parse_url(API_URL, PHP_URL_HOST)));
     }
     writeRawFile($jumpsfile, json_encode($jumps));
     writeRawFile($emailsfile, json_encode($emails));
+    writeRawFile($urlsfile, json_encode($urls));
+    writeRawFile($hashsfile, json_encode($hashs));
+    writeRawFile($refereesfile, json_encode($referees));
+    writeRawFile($hashwordsfile, json_encode($hashwords));
     if (constant('API_DEPLOYMENT_CALLING') == true) {
-        writeRawFile($callfile, json_encode($calls));
+        writeRawFile($callsfile, json_encode($calls));
     }
     if (!empty($jumps[$hash]) && is_array($jumps[$hash]))
         return $jumps[$hash];
