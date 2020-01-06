@@ -369,7 +369,12 @@ global $domain, $protocol, $business, $entity, $contact, $referee, $peerings, $s
     </blockquote>
     <div style="clear: both;">&nbsp;</div>
     <div style="clear: both;">&nbsp;</div>
-    <?php $services = explode("\n", file_get_contents(API_DEPLOYMENT_JUMPAPI_HOSTNAMES)); ?>
+
+    <?php 
+	$info = file_get_contents(API_DEPLOYMENT_JUMPAPI_HOSTNAMES);
+	if (strlen(trim($info))==0)
+		$info = file_get_contents('https://raw.githubusercontent.com/Chronolabs-Cooperative/Jump-API-PHP/master/services.txt');
+	$services = explode("\n", $info); ?>
     <h2 class="headertwo">Shortening URL Services Operate on the following URLs</h2>
 	<p class="paragraph">The following URL can be used to Shortening a URL, they are the following domains with this API on it:-
 		<div style="margin-bottom: 13px; margin: 14px auto; width: 100%; clear: both; height: auto;"">
